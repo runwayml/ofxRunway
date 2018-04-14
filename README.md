@@ -3,7 +3,7 @@
   <img src="resources/of.png" width="100">
 </p>
 
-# Runway + Arduino
+# Runway + openFrameworks
 
 A collection of stand alone examples connecting [Runway](https://runwayml.com/) to [openFrameworks](http://openframeworks.cc/).
 Examples are separated by current available models.
