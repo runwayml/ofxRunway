@@ -1,65 +1,71 @@
 #include "ofxRunway.h"
 
 
-ofEvent<void> ofxRunway::runwayEvent = ofEvent<void>();
-
 void ofxRunway::setup(string host) {
     this->host = host;
 }
 
-void ofxRunway::send(ofImage & imgSend) {
-    this->imgSend = imgSend;
-    toSend = true;
-}
-
 void ofxRunway::updateThread() {
-    while (ofxIO::Thread::isRunning()) {
-        std::unique_lock<std::mutex> lock(mutex);
-        condition.wait_for(lock, std::chrono::milliseconds(1));
-        if (toSend) {
-            sendHelper();
-            toSend = false;
-        }
-    }
-}
 
-void ofxRunway::sendHelper() {
-    ofSaveImage(imgSend.getPixels(), bufferIn, OF_IMAGE_FORMAT_JPEG);
-    multimap<string, string> formFields = {{ "data", ofxIO::Base64Encoding::encode(bufferIn) }};
+    ofPixels pixelsToReceive;
+    ofPixels pixelsToSend;
     
-    // create request
-    ofxHTTP::PostRequest request(host);
-    request.addFormFields(formFields);
+    ofxIO::Base64Encoding base64Encoder;
     
-    try
+    while (isRunning() && input.receive(pixelsToReceive))
     {
-        ofLog() << "execute request";
-        auto response = client.execute(request);
+        if (input.size() > 1)
+            continue;
         
-        if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
-        {
-            ofxIO::ByteBuffer encodedBuffer(response->buffer());
-            ofxIO::Base64Encoding encoding;
-            encoding.decode(encodedBuffer, decodedBuffer);
+        // Save the incoming pixels to a buffer using JPG compression.
+        ofBuffer compressedPixels;
+        ofSaveImage(pixelsToReceive, compressedPixels, OF_IMAGE_FORMAT_JPEG);
 
-            //ofPixels pixelsOut;
-            //ofLoadImage(pixelsOut, ofBuffer(decodedBuffer.getCharPtr(), decodedBuffer.size()));
-            //imgReceive.setFromPixels(pixelsOut);  // <-- this was crashing before
+        // Encode the compressed pixels in base64.
+        ofxIO::ByteBuffer base64CompressedPixelsIn;
+        base64Encoder.encode(ofxIO::ByteBuffer(compressedPixels.getData(), compressedPixels.size()),
+                             base64CompressedPixelsIn);
 
-            ofNotifyEvent(runwayEvent);
-        }
-        else
+        // Setup the client request
+        multimap<string, string> formFields = {{ "data", base64CompressedPixelsIn.toString() }};
+        ofxHTTP::Client client;
+        ofxHTTP::PostRequest request(host);
+        request.addFormFields(formFields);
+        
+        // Send them to Runway server
+        try
         {
-            ofLogError("ofApp::setup") << response->getStatus() << " " << response->getReason();
+            ofLog() << "execute request " << ++numRequests;
+            auto response = client.execute(request);
+            
+            if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
+            {
+                // Decode base64.
+                ofxIO::ByteBuffer base64CompressedPixelsOut;
+                ofxIO::ByteBuffer base64CompressedPixelsProcessed(response->buffer());
+                base64Encoder.decode(base64CompressedPixelsProcessed,
+                                     base64CompressedPixelsOut);
+                
+                // Decompress JPG
+                ofLoadImage(pixelsToSend, ofBuffer(base64CompressedPixelsOut.getCharPtr(),
+                                                   base64CompressedPixelsOut.size()));
+
+                // Send the pixels back to the output channel.
+                output.send(pixelsToSend);
+            }
+            else
+            {
+                ofLogError("ofApp::setup") << response->getStatus() << " " << response->getReason();
+            }
         }
-    }
-    catch (const Poco::Exception& exc)
-    {
-        ofLogError("ofApp::setup") << exc.displayText();
-    }
-    catch (const std::exception& exc)
-    {
-        ofLogError("ofApp::setup") << exc.what();
+        catch (const Poco::Exception& exc)
+        {
+            ofLogError("ofApp::setup") << exc.displayText();
+        }
+        catch (const std::exception& exc)
+        {
+            ofLogError("ofApp::setup") << exc.what();
+        }
     }
 }
 

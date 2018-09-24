@@ -9,25 +9,24 @@ public:
     ofxRunway(): ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {}
     virtual ~ofxRunway(){}
 
-    ofxIO::ByteBuffer & getOutputBuffer() {return decodedBuffer;}
-    
     void setup(string host);
-    void send(ofImage & imgSend);
 
-    static ofEvent<void> runwayEvent;
+    void send(ofPixels & pixels) {
+        input.send(pixels);
+    }
+    bool tryReceive(ofPixels & pixels) {
+        return output.tryReceive(pixels);
+    }
     
 protected:
     
     void updateThread();
-    void sendHelper();
     
+    ofxIO::ThreadChannel<ofPixels> input;
+    ofxIO::ThreadChannel<ofPixels> output;
+
     string host;
-    bool toSend;
     
-    ofxHTTP::Client client;
-    ofBuffer bufferIn;
-    ofxIO::ByteBuffer decodedBuffer;
-    ofImage imgSend;
     
-    // ofImage imgReceive;
+    int numRequests = 0;
 };
