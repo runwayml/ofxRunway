@@ -2,33 +2,53 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    
+    ofSetVerticalSync(true);
+    ofSetLogLevel(OF_LOG_VERBOSE);
+
+    host = "http://localhost:23100";
+    
+    width = 1024;
+    height = 512;
+    
+    // setup Runway client
     ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
-    runway.setup("https://httpbin.org/post");
+    runway.setup(host);
     runway.start();
     
-    ofAddListener(ofxRunway::runwayEvent, this, &ofApp::receivedFromRunway);
+    input.load("test.jpg");
+    input.resize(width, height);
     
-}
-
-//--------------------------------------------------------------
-void ofApp::receivedFromRunway(){
-    cout << "got a thing from runway " << endl;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    if (toSend) {
+        runway.send(input.getPixels());
+        toSend = false;
+    }
+    
+    ofPixels processedPixels;
+    while (runway.tryReceive(processedPixels)) {
+        outputTex.loadData(processedPixels);
+    }
+    
+    ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    input.draw(0, 0);
+    if (outputTex.isAllocated()){
+        outputTex.draw(0, height);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    if (key=='1') {
-        runway.send();
+    if (key==' '){
+        toSend = true;
     }
 }
 

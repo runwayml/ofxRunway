@@ -9,9 +9,6 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-
-        void receivedFromRunway();
-    
 		void keyPressed(int key);
 		void keyReleased(int key);
 		void mouseMoved(int x, int y );
@@ -25,4 +22,13 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
     ofxRunway runway;
+    
+    string host;
+    int width;
+    int height;
+    
+    ofImage input;
+    ofTexture outputTex;
+    
+    bool toSend = false;
 };
