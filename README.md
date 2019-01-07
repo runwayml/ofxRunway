@@ -1,12 +1,10 @@
 <p align="center">
-  <img src="resources/runway_icon.png" width="95">
-  <img src="resources/of.png" width="100">
+  <img src="https://runway.nyc3.digitaloceanspaces.com/assets/github/cover_runway_openframeworks_github.jpg">
 </p>
 
 # Runway + openFrameworks
 
-A collection of stand alone examples connecting [Runway](https://runwayml.com/) to [openFrameworks](http://openframeworks.cc/).
-Examples are separated by current available models.
+A collection of examples and tutorials on how to use [Runway](https://runwayml.com/) with [openFrameworks](http://openframeworks.cc/).
 
 ## Examples
 
