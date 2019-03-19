@@ -6,20 +6,17 @@ void ofApp::setup(){
     ofSetVerticalSync(true);
     ofSetLogLevel(OF_LOG_VERBOSE);
 
-    width = 640;
-    height = 480;
     ready = true;
     toSend = false;
+    width = 640;
+    height = 480;
 
     // setup Runway client
     ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
-    runway.setup("http://localhost:8000/convert", "output");
+    runway.setup("http://localhost:9000");
     runway.start();
 
     cam.setup(width, height);
-
-    input.load("myimg.jpg");
-    input.resize(width, height);
 }
 
 //--------------------------------------------------------------
@@ -32,14 +29,16 @@ void ofApp::update(){
 
     if (toSend) {
         ofxRunwayBundle bundle;
+        bundle.address = "convert";
         bundle.images["image"] = input.getPixels();
         runway.send(bundle);
         toSend = false;
         ready = false;
     }
 
-    ofPixels processedPixels;
-    while (runway.tryReceive(processedPixels)) {
+    ofxRunwayBundle bundleToReceive;
+    while (runway.tryReceive(bundleToReceive)) {
+        ofPixels processedPixels = bundleToReceive.images["output"];
         outputTex.loadData(processedPixels);
         ready = true;
     }

@@ -23,15 +23,14 @@ class ofApp : public ofBaseApp{
 
     ofxRunway runway;
 
+    ofImage input;
+    ofTexture outputTex;
+	ofVideoGrabber cam;
+
     int width;
     int height;
 
-    ofImage input;
-    ofTexture outputTex;
-
     bool toSend;
-		bool ready;
-
-		ofVideoGrabber cam;
+	bool ready;
 
 };

@@ -13,7 +13,7 @@ void ofApp::setup(){
 
     // setup Runway client
     ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
-    runway.setup("http://localhost:8000/convert", "output");
+    runway.setup("http://localhost:9000/convert", "output");
     runway.start();
 
     cam.setup(width, height);
