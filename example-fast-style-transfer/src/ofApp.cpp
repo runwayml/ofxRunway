@@ -13,7 +13,7 @@ void ofApp::setup(){
 
     // setup Runway client
     ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
-    runway.setup("http://localhost:9000/convert", "output");
+    runway.setup("http://localhost:9000");
     runway.start();
 
     cam.setup(width, height);
@@ -29,15 +29,17 @@ void ofApp::update(){
 
     if (toSend) {
         ofxRunwayBundle bundle;
+        bundle.address = "convert";
         bundle.images["image"] = input.getPixels();
         runway.send(bundle);
         toSend = false;
         ready = false;
     }
 
-    ofPixels processedPixels;
-    while (runway.tryReceive(processedPixels)) {
-        outputTex.loadData(processedPixels);
+    ofxRunwayBundle bundle;
+    while (runway.tryReceive(bundle)) {
+        ofPixels processedPixels;
+        outputTex.loadData(bundle.images["output"]);
         ready = true;
     }
 

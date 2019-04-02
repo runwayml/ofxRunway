@@ -44,7 +44,6 @@ void ofApp::update(){
         ready = true;
     }
 
-
     ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
 

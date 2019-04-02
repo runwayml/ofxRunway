@@ -30,8 +30,8 @@ class ofApp : public ofBaseApp{
     ofTexture outputTex;
 
     bool toSend;
-		bool ready;
+	bool ready;
 
-		ofVideoGrabber cam;
+	ofVideoGrabber cam;
 
 };
