@@ -1,11 +1,12 @@
 #include "ofxRunway.h"
 
 
+//----------------------
 void ofxRunway::setup(string host) {
     this->host = host;
 }
 
-
+//----------------------
 void ofxRunway::getTypesLookup(string address) {
     ofxHTTP::Client client;
     ofxHTTP::GetRequest request(host+"/"+address);
@@ -48,19 +49,19 @@ void ofxRunway::getTypesLookup(string address) {
     }
 }
 
-
+//----------------------
 void ofxRunway::send(ofxRunwayBundle & bundle) 
 {
     input.send(bundle);
 }
 
-
+//----------------------
 bool ofxRunway::tryReceive(ofxRunwayBundle & bundle) 
 {
     return output.tryReceive(bundle);
 }
 
-
+//----------------------
 void ofxRunway::bundleImagesToJson(ofJson & json, map<string, ofPixels> & bundleImages) 
 {
     for (auto const &e1 : bundleImages) 
@@ -81,7 +82,7 @@ void ofxRunway::bundleImagesToJson(ofJson & json, map<string, ofPixels> & bundle
     }
 }
 
-
+//----------------------
 template<class T> void ofxRunway::bundleToJson(ofJson & json, map<string, T> & bundle) 
 {
     for (auto const &e1 : bundle) 
@@ -92,7 +93,7 @@ template<class T> void ofxRunway::bundleToJson(ofJson & json, map<string, T> & b
     }
 }
 
-
+//----------------------
 void ofxRunway::updateThread() 
 {
     while (isRunning() && input.receive(bundleToReceive))
@@ -102,7 +103,9 @@ void ofxRunway::updateThread()
 
         // convert bundle to json
         ofJson json = {};
-        bundleToJson(json, bundleToReceive.vectors);        
+        bundleToJson(json, bundleToReceive.vectorsV);              
+        bundleToJson(json, bundleToReceive.vectorsF);              
+        bundleToJson(json, bundleToReceive.vectorsS);              
         bundleToJson(json, bundleToReceive.floats);        
         bundleToJson(json, bundleToReceive.ints);        
         bundleToJson(json, bundleToReceive.strings);   
@@ -135,12 +138,19 @@ void ofxRunway::updateThread()
 
                     if (dataType == "vector") 
                     {
-                        vector<string> value;
-						int n = it.value().size();
-						for (int i=0; i<n; i++) {
-                            value.push_back(it.value()[i]);
-						}
-                        //bundleToSend.vectors[it.key()] = value;
+                        string vecType = it.value()[0].type_name();
+                        if (vecType == "array") {
+                            vector<vector<float> > value = it.value();
+                            bundleToSend.vectorsV[it.key()] = value;
+                        }
+                        else if (vecType == "number") {
+                            vector<float> value = it.value();
+                            bundleToSend.vectorsF[it.key()] = value;
+                        }
+                        else if (vecType == "string") {
+                            vector<string> value = it.value();
+                            bundleToSend.vectorsS[it.key()] = value;
+                        }
 					}
                     else if (dataType == "int") 
                     {
@@ -159,7 +169,6 @@ void ofxRunway::updateThread()
                     }
                     else if (dataType == "image") 
                     {
-                        string v = it.value();
                         string imageB64 = it.value().dump();
                         imageB64 = imageB64.substr(1, imageB64.size()-2);//+"==";;
                         imageB64 = imageB64.substr(imageB64.find(",") + 1);

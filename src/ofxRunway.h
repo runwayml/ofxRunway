@@ -11,7 +11,9 @@ struct ofxRunwayBundle {
   map<string, float> floats;
   map<string, int> ints;
   map<string, string> strings;
-  map<string, vector<float>> vectors;
+  map<string, vector<vector<float>> > vectorsV;
+  map<string, vector<float> > vectorsF;
+  map<string, vector<string> > vectorsS;
 };
 
 
