@@ -13,7 +13,7 @@ void ofApp::setup(){
 
     // setup Runway client
     ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
-    runway.setup("http://localhost:9000");
+    runway.setup("http://localhost:8000");
     runway.start();
 
     cam.setup(width, height);
@@ -39,6 +39,7 @@ void ofApp::update(){
     ofxRunwayBundle bundle;
     while (runway.tryReceive(bundle)) {
         ofPixels processedPixels;
+        cout << "got image " << endl;
         outputTex.loadData(bundle.images["output"]);
         ready = true;
     }

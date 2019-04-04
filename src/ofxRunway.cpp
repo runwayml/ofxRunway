@@ -23,15 +23,12 @@ void ofxRunway::getTypesLookup(string address) {
             ofJson inputs = responseJson["inputs"];
             ofJson outputs = responseJson["outputs"];
 
-            for (auto it = inputs.begin(); it != inputs.end(); ++it) 
-            {
-                inputTypes[it.key()] = it.value();
+            for (int i=0; i<inputs.size(); i++) {
+                inputTypes[inputs[i]["name"]] = inputs[i]["type"];
             }
-            for (auto it = outputs.begin(); it != outputs.end(); ++it) 
-            {
-                outputTypes[it.key()] = it.value();
+            for (int i=0; i<outputs.size(); i++) {
+                outputTypes[outputs[i]["name"]] = outputs[i]["type"];
             }
-
             addresses.push_back(address);
         }
         else
