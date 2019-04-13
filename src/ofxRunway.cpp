@@ -110,7 +110,7 @@ void ofxRunway::updateThread()
 
         string address = bundleToReceive.address;
 
-        // if 
+        // lookup data types for all inputs and outputs
         if (find(addresses.begin(), addresses.end(), address) == addresses.end()) {
             getTypesLookup(address);
         }
@@ -159,7 +159,7 @@ void ofxRunway::updateThread()
                         float value = it.value();
                         bundleToSend.floats[it.key()] = value;
                     }
-                    else if (dataType == "string") 
+                    else if (dataType == "string" || dataType == "text") 
                     {
                         string value = it.value();
                         bundleToSend.strings[it.key()] = value;
