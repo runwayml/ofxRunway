@@ -4,6 +4,7 @@
 //----------------------
 void ofxRunway::setup(string host) {
     this->host = host;
+    busy = false;
 }
 
 //----------------------
@@ -98,6 +99,8 @@ void ofxRunway::updateThread()
         if (input.size() > 1)
             continue;
 
+        busy = true;
+
         // convert bundle to json
         ofJson json = {};
         bundleToJson(json, bundleToReceive.vectorsV);              
@@ -188,6 +191,7 @@ void ofxRunway::updateThread()
         {
             ofLogError("ofApp::setup ") << exc.what();
         }
-
+        
+        busy = false;
     }
 }

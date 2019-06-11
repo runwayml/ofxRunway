@@ -26,7 +26,9 @@ public:
 
     void send(ofxRunwayBundle & bundle);
     bool tryReceive(ofxRunwayBundle & bundle);
-    
+
+    bool getBusy() {return busy;}
+        
 protected:
 
     void getTypesLookup(string address);
@@ -43,4 +45,5 @@ protected:
 	map<string, string> outputTypes;
     vector<string> addresses;
     string host;
+    bool busy;
 };
