@@ -19,8 +19,8 @@ struct ofxRunwayBundle {
 
 class ofxRunway: public ofxIO::Thread {
 public:
-    ofxRunway(): ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {}
-    virtual ~ofxRunway(){}
+    ofxRunway();
+    virtual ~ofxRunway() {}
 
     void setup(string host);
 

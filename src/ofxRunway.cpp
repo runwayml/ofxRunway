@@ -1,6 +1,12 @@
 #include "ofxRunway.h"
 
 
+
+//----------------------
+ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {
+    busy = true;
+}
+
 //----------------------
 void ofxRunway::setup(string host) {
     this->host = host;
