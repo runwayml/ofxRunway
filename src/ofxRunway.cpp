@@ -24,7 +24,7 @@ void ofxRunway::getTypesLookup(string address) {
         auto response = client.execute(context, request);
         if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
         {
-            ofLogNotice("ofApp::setup") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
+            ofLogVerbose("ofApp::setup") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
 
             ofJson responseJson = response->json();
             ofJson inputs = responseJson["inputs"];
@@ -135,7 +135,7 @@ void ofxRunway::updateThread()
             auto response = client.execute(request);
             if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
             {
-              	ofLogNotice("ofApp::setup") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
+              	ofLogVerbose("ofApp::setup") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
               	ofxRunwayBundle bundleToSend;
               	ofJson responseJson = response->json();
 
