@@ -39,7 +39,8 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-
+    
+        ofxOscSender   sender;
 		ofxOscReceiver receiver;
         // This array will hold the results parsed from the OSC message string
         ofxJSONElement results;

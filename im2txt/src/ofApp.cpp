@@ -29,7 +29,15 @@ void ofApp::setup(){
 //      initialize empty string
     caption = "";
 //      Use the localhost and the port 57200 that we define in Runway
-    receiver.setup(57200);
+    //receiver.setup(57200);
+    ofxOscSenderSettings sendSettings;
+    sendSettings.host ="127.0.0.1";
+    sendSettings.port =57100;
+    sendSettings.broadcast = true;
+    sender.setup(sendSettings);
+    ofxOscReceiverSettings recvSettings;
+    recvSettings.port =57200;
+    receiver.setup(recvSettings);
 }
 
 //--------------------------------------------------------------
