@@ -54,9 +54,7 @@ void ofApp::update(){
             string data = m.getArgAsString(0);
             //        parse it to JSON
             results.parse(data);
-            // From the JSONObject we want the key with the results
-            // And from the array of captions (3) we want the first one
-            // So we assign that caption to our global caption variable
+            //        retrieve the caption property {"caption":"im2txt result here"}
             caption = results["caption"].asString();
         }
     }
