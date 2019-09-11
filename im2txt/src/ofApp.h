@@ -40,6 +40,11 @@ class ofApp : public ofBaseApp{
 		void update();
 		void draw();
     
+        void connect();
+        void disconnect();
+    
+        void keyPressed(int key);
+    
         ofxOscSender   sender;
 		ofxOscReceiver receiver;
         // This array will hold the results parsed from the OSC message string

@@ -28,16 +28,18 @@ void ofApp::setup(){
     ofSetBackgroundColor(0);
 //      initialize empty string
     caption = "";
-//      Use the localhost and the port 57200 that we define in Runway
-    //receiver.setup(57200);
+    // setup OSC sender
     ofxOscSenderSettings sendSettings;
     sendSettings.host ="127.0.0.1";
     sendSettings.port =57100;
     sendSettings.broadcast = true;
     sender.setup(sendSettings);
+    // setup OSC receiver
     ofxOscReceiverSettings recvSettings;
     recvSettings.port =57200;
     receiver.setup(recvSettings);
+    // send connect message to Runway
+    connect();
 }
 
 //--------------------------------------------------------------
@@ -46,14 +48,15 @@ void ofApp::update(){
         // get the next OSC message
         ofxOscMessage m;
         receiver.getNextMessage(m);
-        //        grab the data
-        string data = m.getArgAsString(0);
-        //        parse it to JSON
-        results.parse(data);
-        // From the JSONObject we want the key with the results
-        // And from the array of captions (3) we want the first one
-        // So we assign that caption to our global caption variable
-        caption = results["results"][0]["caption"].asString();
+        // if it's /data
+        if(m.getAddress() == "/data"){
+            //        grab the data
+            string data = m.getArgAsString(0);
+            //        parse it to JSON
+            results.parse(data);
+            //        retrieve the caption property {"caption":"im2txt result here"}
+            caption = results["caption"].asString();
+        }
     }
 
 }
@@ -62,3 +65,28 @@ void ofApp::update(){
 void ofApp::draw(){
     ofDrawBitmapString(caption, 10, 10);
 }
+
+//--------------------------------------------------------------
+void ofApp::keyPressed(int key){
+    if(key == 'c'){
+        connect();
+    }
+    if(key == 'c'){
+        disconnect();
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::connect(){
+    ofxOscMessage m;
+    m.setAddress("/server/connect");
+    sender.sendMessage(m, false);
+}
+
+//--------------------------------------------------------------
+void ofApp::disconnect(){
+    ofxOscMessage m;
+    m.setAddress("/server/disconnect");
+    sender.sendMessage(m, false);
+}
+
