@@ -2,14 +2,17 @@
   <img src="./assets/cover_runway_openframeworks_github.jpg">
 </p>
 
-# Runway + openFrameworks
+# RunwayML + openFrameworks
 
-A collection of examples and tutorials on how to use [Runway](https://runwayml.com/) with [openFrameworks](http://openframeworks.cc/).
+A collection of examples and tutorials on how to use [RunwayML](https://runwayml.com/) with [openFrameworks](http://openframeworks.cc/).
+
+More RunwayML networking examples [here](https://learn.runwayml.com/#/networking/examples).
+
+🎉Community Contribution
 
 ## Examples
 
-- [im2txt](/im2txt/)
-- [OpenPose](/openpose/)
+[Generate Text from Images with im2txt](/im2txt/) by [George Profenza](http://sensori.al/) 🎉
 
 ## Contributing
 
