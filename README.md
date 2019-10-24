@@ -12,7 +12,8 @@ More RunwayML networking examples [here](https://learn.runwayml.com/#/networking
 
 ## Examples
 
-[Generate Text from Images with im2txt](/im2txt/) by [George Profenza](http://sensori.al/) 🎉
+### OSC
+* [Generate Text from Images with im2txt](/im2txt/) by [George Profenza](http://sensori.al/) 🎉
 
 ## Contributing
 
