@@ -91,7 +91,7 @@ public:
 	
 //	const static string OFX_RUNWAY_VERSION = "0.2";
 	
-	ofEvent<ofxRunwayData> dataEvent;
+//	ofEvent<ofxRunwayData> dataEvent;
 	ofEvent<ofJson> infoEvent;
 	ofEvent<string> errorEvent;
 	
