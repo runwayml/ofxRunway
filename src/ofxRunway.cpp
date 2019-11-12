@@ -5,7 +5,6 @@
 //----------------------
 ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {
 	busy = true;
-	imageDownscaling = 0.25;
 	state = OFX_RUNWAY_DISCONNECTED;
 	ioTypesSet = false;
 	
@@ -13,6 +12,7 @@ ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)
 
 //----------------------
 bool ofxRunway::setup(const string& host) {
+	ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
 	this->host = host;
 	busy = false;
 	
@@ -20,7 +20,20 @@ bool ofxRunway::setup(const string& host) {
 	// lookup data types for all inputs and outputs
 	return getTypesLookup();
 }
+//----------------------
+bool ofxRunway::setup(ofxRunwayListener& listenerClass, const string& host){
+	listeners.unsubscribeAll();
+	
+	listeners.push(infoEvent.newListener(&listenerClass, &ofxRunwayListener::runwayInfoEvent));
+	listeners.push(errorEvent.newListener(&listenerClass, &ofxRunwayListener::runwayErrorEvent));
 
+	return setup(host);
+}
+//----------------------
+bool ofxRunway::setup(ofxRunwayListener* listenerClass, const string& host){
+	if(listenerClass == nullptr) return false;
+	return setup(*listenerClass, host);
+}
 //----------------------
 bool ofxRunway::getTypesLookup() {
 	if(ioTypesSet){
@@ -43,17 +56,6 @@ bool ofxRunway::getTypesLookup() {
 			
 			ofJson inputs = responseJson["inputs"];
 			ofJson outputs = responseJson["outputs"];
-			//
-			//			cout << "-----------------------------" << endl;
-			//			cout << "            INPUTS           " << endl;
-			//			cout << "-----------------------------" << endl;
-			//			cout << inputs.dump(4) <<endl;
-			//
-			//			cout << "-----------------------------" << endl;
-			//			cout << "           OUTPUTS           " << endl;
-			//			cout << "-----------------------------" << endl;
-			//			cout << outputs.dump(4) <<endl;
-			//
 			
 			for (int i=0; i<inputs.size(); i++) {
 				cout << "added input : " << inputs[i]["name"] <<endl;
@@ -63,134 +65,45 @@ bool ofxRunway::getTypesLookup() {
 				cout << "added output : " << outputs[i]["name"] << " of type: " << outputs[i]["type"] <<endl;
 				outputTypes[outputs[i]["name"]].set(outputs[i]);
 			}
-			//			addresses.push_back(address);
-			//			for(auto& i: inputTypes){
-			//				cout << i.second;
-			//			}
-			//			for(auto& o: outputTypes){
-			//				cout << o.second;
-			//			}
 			ioTypesSet = true;
 			state = OFX_RUNWAY_CONNECTED;
+			ofNotifyEvent(infoEvent, infoJson, this);
 			
 		}
 		else
 		{
 			state = OFX_RUNWAY_CONNECTION_REFUSED;
-			ofLogError("@@@ ofxRunway::getTypesLookup") << response->getStatus() << " " << response->getReason();
+			errorString =  response->statusAndReason();
+			ofNotifyEvent(errorEvent, errorString, this);
+			ofLogError("@@@ ofxRunway::getTypesLookup") << errorString;
 		}
 	}
 	catch (const Poco::Exception& exc)
 	{
 		state = OFX_RUNWAY_CONNECTION_REFUSED;
-		ofLogError("### ofxRunway::getTypesLookup") << exc.displayText();
+		errorString =  exc.displayText();
+		ofNotifyEvent(errorEvent, errorString, this);
+		ofLogError("### ofxRunway::getTypesLookup") << errorString;
 	}
 	catch (const std::exception& exc)
 	{
 		state = OFX_RUNWAY_CONNECTION_REFUSED;
-		ofLogError("!!! ofxRunway::getTypesLookup") << exc.what();
+		errorString =  exc.what();
+		ofNotifyEvent(errorEvent, errorString, this);
+		ofLogError("!!! ofxRunway::getTypesLookup") << errorString;
 	}
 	return ioTypesSet;
 }
 
 //----------------------
-void ofxRunway::send(ofxRunwayData & data)
-{
+void ofxRunway::send(ofxRunwayData & data){
 	input.send(data);
 }
 
 //----------------------
-bool ofxRunway::tryReceive(ofxRunwayData & data)
-{
+bool ofxRunway::tryReceive(ofxRunwayData & data){
 	return output.tryReceive(data);
 }
-
-
-//----------------------
-//void ofxRunway::bundleImagesToJson(ofJson & json, map<string, ofPixels> & bundleImages)
-//{
-//	for (auto const &e1 : bundleImages)
-//	{
-//		string key = e1.first;
-//		ofPixels pixelsToReceive = e1.second;
-//		//		cout << "ofxRunway::bundleImagesToJson : Width: " <<  pixelsToReceive.getWidth() << "  height: " << pixelsToReceive.getHeight() << endl;
-//		
-//		pixelsToReceive.resize(pixelsToReceive.getWidth() * imageDownscaling, pixelsToReceive.getHeight() * imageDownscaling);
-//		// Save the incoming pixels to a buffer using JPG compression.
-//		ofBuffer compressedPixels;
-//		ofSaveImage(pixelsToReceive, compressedPixels, OF_IMAGE_FORMAT_JPEG);
-//		
-//		// Encode the compressed pixels in base64.
-//		ofxIO::ByteBuffer base64CompressedPixelsIn;
-//		base64Encoder.encode(ofxIO::ByteBuffer(compressedPixels.getData(), compressedPixels.size()),
-//							 base64CompressedPixelsIn);
-//		
-//		json[key] = "data:image/jpeg;base64,"+base64CompressedPixelsIn.toString()+"==";
-//	}
-//}
-
-////----------------------
-//template<class T> void ofxRunway::bundleToJson(ofJson & json, map<string, T> & bundle)
-//{
-//	for (auto const &e1 : bundle)
-//	{
-//		//		string key = e1.first;
-//		//		T value = e1.second;
-//		//		json[key] = value;
-//		json[e1.first] = e1.second;
-//		
-//	}
-//}
-
-//void ofxRunway::jsonToBundle(ofxRunwayBundle &bundle, const ofJson& json){
-//	for (auto it = json.begin(); it != json.end(); ++it) {
-//		string dataType = outputTypes[it.key()].type;
-//		
-//		if (dataType == "array")
-//		{
-//			string vecType = it.value()[0].type_name();
-//			if (vecType == "array") {
-//				vector<vector<float> > value = it.value();
-//				bundle.vectorsV[it.key()] = value;
-//			}
-//			else if (vecType == "number") {
-//				vector<float> value = it.value();
-//				bundle.vectorsF[it.key()] = value;
-//			}
-//			else if (vecType == "string") {
-//				vector<string> value = it.value();
-//				bundle.vectorsS[it.key()] = value;
-//			}
-//		}
-//		else if (dataType == "int")
-//		{
-//			int value = it.value();
-//			bundle.ints[it.key()] = value;
-//		}
-//		else if (dataType == "float")
-//		{
-//			float value = it.value();
-//			bundle.floats[it.key()] = value;
-//		}
-//		else if (dataType == "string" || dataType == "text")
-//		{
-//			string value = it.value();
-//			bundle.strings[it.key()] = value;
-//		}
-//		else if (dataType == "image")
-//		{
-//			string imageB64 = it.value().dump();
-//			imageB64 = imageB64.substr(1, imageB64.size()-2);//+"==";;
-//			imageB64 = imageB64.substr(imageB64.find(",") + 1);
-//			ofBuffer decodedBuffer;
-//			decodedBuffer.set(ofxIO::Base64Encoding::decode(imageB64));
-//			
-//			ofLoadImage(bundle.images[it.key()], decodedBuffer);
-//			//			bundle.images[it.key()] = pixelsToSend;
-//		}
-//	}
-//}
-
 //----------------------
 void ofxRunway::updateThread()
 {
@@ -200,17 +113,6 @@ void ofxRunway::updateThread()
 			continue;
 		
 		busy = true;
-		
-		// convert bundle to json
-//		ofJson json = {};
-//		bundleToJson(json, bundleToReceive.vectorsV);
-//		bundleToJson(json, bundleToReceive.vectorsF);
-//		bundleToJson(json, bundleToReceive.vectorsS);
-//		bundleToJson(json, bundleToReceive.floats);
-//		bundleToJson(json, bundleToReceive.ints);
-//		bundleToJson(json, bundleToReceive.strings);
-//		bundleImagesToJson(json, bundleToReceive.images);
-//
 		
 		if(!ioTypesSet) getTypesLookup();
 		
@@ -228,34 +130,36 @@ void ofxRunway::updateThread()
 				ofLogVerbose("ofxRunway::updateThread") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
 				ofxRunwayData dataToSend;
 				dataToSend.data = response->json();
-//				jsonToBundle(bundleToSend,responseJson );
-				
+
 				state = OFX_RUNWAY_RUNNING;
 				// send bundle back to app
 				output.send(dataToSend);
+			}
+			else
+			{
+				state = OFX_RUNWAY_CONNECTION_REFUSED;
+				errorString =  response->statusAndReason();
+				ofNotifyEvent(errorEvent, errorString, this);
+				ofLogError("@@@ ofxRunway::updateThread") << errorString;
 			}
 		}
 		catch (const Poco::Exception& exc)
 		{
 			state = OFX_RUNWAY_CONNECTION_REFUSED;
-			ofLogError("### ofxRunway::updateThread ") << exc.displayText();
+			errorString =  exc.displayText();
+			ofNotifyEvent(errorEvent, errorString, this);
+			ofLogError("### ofxRunway::updateThread ") << errorString;
 		}
 		catch (const std::exception& exc)
 		{
+			errorString =  exc.what();
+			ofNotifyEvent(errorEvent, errorString, this);
 			state = OFX_RUNWAY_CONNECTION_REFUSED;
-			ofLogError("!!! ofxRunway::updateThread ") << exc.what();
+			ofLogError("!!! ofxRunway::updateThread ") << errorString;
 		}
 		
 		busy = false;
 	}
-}
-//----------------------
-void ofxRunway::setImageDownscaling(float downscaling){
-	imageDownscaling = downscaling;
-}
-//----------------------
-float ofxRunway::getImageDownscaling(){
-	return imageDownscaling;
 }
 //----------------------
 ofxRunwayState ofxRunway::getState(){

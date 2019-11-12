@@ -28,10 +28,7 @@ namespace ofxRunway{
 	 POSE_RIGHT_ANKLE_INDEX 	= 16
 	};
 
-enum ImageFormat{	
-	OFX_RUNWAY_JPG,
-	OFX_RUNWAY_PNG
-};
+
 class ModelUtils {
  public:
 	/**
@@ -61,38 +58,5 @@ class ModelUtils {
 			e.printStackTrace();
 		}
 	}
-	
-	/**
-	 * convert a const ofPixels&  to a ofJson with the Base64 encoded image as the value of the "image" key
-	 * @param image - the const ofPixels&  to convert to Base64
-	 * @return JSON formatted string
-	 */
-	static string toRunwayImageQuery(const ofPixels& image){
-		return "{\"image\":\"" + toBase64(image) + "\"}";
-	}
-	
-	/**
-	 * convert a const ofPixels&  to a ofJson with the Base64 encoded image as the value of the "image" key
-	 * @param image - the const ofPixels&  to convert to Base64
-	 * @param format - the image format: <pre>ModelUtils.IMAGE_FORMAT_JPG</pre>("JPG") or <pre>ModelUtils.IMAGE_FORMAT_PNG</pre>("PNG")
-	 * @return JSON formatted string
-	 */
-	static string toRunwayImageQuery(const ofPixels&  image, ImageFormat format){
-		return "{\"image\":\"" + toBase64(image,format) + "\"}";
-	}
-	
-	/**
-	 * convert a const ofPixels&  to a ofJson with the Base64 encoded image as the value of the "image" key
-	 * @param image - the const ofPixels&  to convert to Base64
-	 * @param format - the image format: <pre>ModelUtils.IMAGE_FORMAT_JPG</pre>("JPG") or <pre>ModelUtils.IMAGE_FORMAT_PNG</pre>("PNG")
-	 * @param key - the JSON key for the Base64 image
-	 * @return JSON formatted string
-	 */
-	static string toRunwayImageQuery(const ofPixels&  image, ImageFormat format,const string& key){
-		return "{\"" + key + "\":\"" + toBase64(image,format) + "\"}";
-	}
-	
-	
-	
-}
+};
 }

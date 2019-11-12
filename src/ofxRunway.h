@@ -47,6 +47,12 @@ enum ofxRunwayState{
 	OFX_RUNWAY_CONNECTION_REFUSED
 };
 
+class ofxRunwayListener{
+
+public:
+	virtual void runwayInfoEvent(ofJson& info) = 0;
+	virtual void runwayErrorEvent(string& message) = 0;
+};
 
 class ofxRunway:public  ofxIO::Thread {
 public:
@@ -54,14 +60,14 @@ public:
 	virtual ~ofxRunway() {}
 	
 	bool setup(const string& host);
-	
+	bool setup(ofxRunwayListener& listenerClass, const string& host);
+	bool setup(ofxRunwayListener* listenerClass, const string& host);
+
 	void send(ofxRunwayData & data);
 	bool tryReceive(ofxRunwayData & data);
 	
 	bool isBusy() {return busy;}
 	
-	void setImageDownscaling(float downscaling);// default 0.25
-	float getImageDownscaling();
 	
 	ofxRunwayState getState();
 	string getStateAsString(bool bVerbose = false);
@@ -85,101 +91,19 @@ public:
 	
 //	const static string OFX_RUNWAY_VERSION = "0.2";
 	
-	// default host is localhost
-//	const static string DEFAULT_HOST = "localhost";
-//
-//	/**
-//	 * shorthand for drawing PoseNet parts into the sketch's default graphics buffer
-//	 * @param data - the ofJson received from Runway
-//	 * @param ellipseSize - how large should joints be rendered
-//	 */
-//	void drawPoseNetParts(ofJson data,float ellipseSize){
-//		ModelUtils.drawPoseParts(data, parent.g, ellipseSize);
-//	}
-//	
-//	
+	ofEvent<ofxRunwayData> dataEvent;
+	ofEvent<ofJson> infoEvent;
+	ofEvent<string> errorEvent;
 	
 	
 protected:
-		
-//	
-//	
-//	/**
-//	 * if <pre>runwayInfoEvent</pre> is present it calls it passing the info <pre>ofJson</pre>
-//	 * @param info
-//	 */
-//	void dispatchInfo(ofJson info){
-//		// if the callback isn't null
-//		if (onInfoEventMethod != null) {
-//			// try to call it
-//			try {
-//				// JSON parse first string argument and pass as callback argument
-//				onInfoEventMethod.invoke(parent, info);
-//			}catch (Exception e) {
-//				System.err.println("Error, disabling runwayInfoEvent()");
-//				System.err.println(e.getLocalizedMessage());
-//				onInfoEventMethod = null;
-//			}
-//		}
-//	}
-//	
-//	/**
-//	 * if <pre>runwayErrorEvent</pre> is present it calls it passing the error string
-//	 * @param info
-//	 */
-//	void dispatchError(const string&  message){
-//		// if the callback isn't null
-//		if (onErrorEventMethod != null) {
-//			// try to call it
-//			try {
-//				// pass OSC first argument as callback argument
-//				onErrorEventMethod.invoke(parent, message);
-//			}catch (Exception e) {
-//				System.err.println("Error, disabling runwayErrorEvent()");
-//				System.err.println(e.getLocalizedMessage());
-//				onErrorEventMethod = null;
-//			}
-//		}
-//	}
-//	
-//	/**
-//	 * if <pre>runwayDataEvent</pre> is present it calls it passing inference data
-//	 * @param data
-//	 */
-//	void dispatchData(ofJson data){
-//		// if the callback isn't null
-//		if (onDataEventMethod != null) {
-//			// try to call it
-//			try {
-//				// JSON parse first string argument and pass as callback argument
-//				onDataEventMethod.invoke(parent, data);
-//			}catch (Exception e) {
-//				System.err.println("Error, disabling runwayDataEvent()");
-//				System.err.println(e.getLocalizedMessage());
-//				onDataEventMethod = null;
-//			}
-//		}
-//	}
-//	
 
-
-
-	
-	
-	
-	//reference: https://stackoverflow.com/Questions/5667371/validate-ipv4-address-in-java
-	// const static Pattern IPV4_PATTERN = Pattern.compile("^(([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.){3}([01]?\\d\\d?|2[0-4]\\d|25[0-5])$");
-	
-//	void jsonToBundle(ofxRunwayBundle &bundleToSend, const ofJson& json);
 	
 	bool getTypesLookup();
 	void updateThread();
-//	void bundleImagesToJson(ofJson & json, map<string, ofPixels> & bundleImages);
-//	template<class T> void bundleToJson(ofJson & json, map<string, T> & bundle);
 	
 	ofPixels pixelsToSend;
 	
-//	ofxIO::Base64Encoding base64Encoder;
 	ofxRunwayData dataToReceive;
 	
 	ofxIO::ThreadChannel<ofxRunwayData> input;
@@ -188,7 +112,6 @@ protected:
 	map<string, ofxRunwayIOInfo> inputTypes;
 	map<string, ofxRunwayIOInfo> outputTypes;
 
-	
 	string host;
 	int    port;
 
@@ -196,8 +119,12 @@ protected:
 	
 	ofJson infoJson;
 
-	std::atomic<float> imageDownscaling;// default 0.25
 	std::atomic<ofxRunwayState> state;
+
+	ofEventListeners listeners;
+	
+	
+	std::string errorString;
 	
 private:
 	void makeRequest(const string& address, const ofJson& json);

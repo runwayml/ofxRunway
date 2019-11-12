@@ -16,14 +16,12 @@ enum ofxRunwayImageType{
 class ofxRunwayData {
 public:
 	string address;
-//	template<typename PixelType>
+
 	void setImage(const string& name,
-//				  const ofBaseHasPixels_<PixelType>& pixels,
 				  const ofBaseHasPixels& pixels,
 				  ofxRunwayImageType type, int width = 0, int height = 0);
-//	template<typename PixelType>
+
 	void setImage(const string& name,
-//				  const ofPixels_<PixelType>& pixels,
 				  const ofPixels& pixels,
 				  ofxRunwayImageType type,
 				  int width = 0, int height = 0);
@@ -37,14 +35,12 @@ public:
 	void setFloatVectors(const string& name,const vector<vector<float> >& v);
 	
 	
-//	template<typename PixelType>
+
 	bool getImage(const string& name,
-//				  ofBaseHasPixels_<PixelType>& pixels);
+
 				  ofBaseHasPixels& pixels);
-//	template<typename PixelType>
-	bool getImage(const string& name,
-//				  ofPixels_<PixelType>& pixels);
-				  ofPixels& pixels);
+
+	bool getImage(const string& name, ofPixels& pixels);
 	bool getBoolean(const string& name, bool &b);
 	bool getInt(const string& name, int& i);
 	bool getFloat(const string& name, float& f);

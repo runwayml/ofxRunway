@@ -19,17 +19,13 @@ bool ofxRunwayData::checkSetData(const string& name, const string& callerName){
 
 
 //------------------------------------------------------------------------------------------------
-//template<typename PixelType>
 void ofxRunwayData::setImage(const string& name,
-							 //const ofBaseHasPixels_<PixelType>& pixels,
 							 const ofBaseHasPixels& pixels,
 							 ofxRunwayImageType type, int width, int height){
 	this->setImage(name, pixels.getPixels(), type, width, height);
 }
 //------------------------------------------------------------------------------------------------
-//template<typename PixelType>
 void ofxRunwayData::setImage(const string& name,
-//							 const ofPixels_<PixelType>& pixels,
 							 const ofPixels& pixels,
 							 ofxRunwayImageType type,
 							 int width, int height){
@@ -98,17 +94,13 @@ void ofxRunwayData::setFloatVectors(const string& name,const vector<vector<float
 }
 
 //------------------------------------------------------------------------------------------------
-//template<typename PixelType>
 bool ofxRunwayData::getImage(const string& name,
-//							 ofBaseHasPixels_<PixelType>& pixels
 							 ofBaseHasPixels& pixels
 							 ){
 	return getImage(name, pixels.getPixels());
 }
 //------------------------------------------------------------------------------------------------
-//template<typename PixelType>
 bool ofxRunwayData::getImage(const string& name,
-//							 ofPixels_<PixelType>& pixels
 							 ofPixels& pixels
 							 ){
 	if(!data.contains(name)){
@@ -202,6 +194,6 @@ bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
 bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
 	return getDataArray(name, {"array"}, v);
 }
-bool getBoolean(const string& name, bool &b);
+
 
 
