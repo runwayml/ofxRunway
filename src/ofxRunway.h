@@ -127,7 +127,16 @@ protected:
 	std::string errorString;
 	
 private:
-	void makeRequest(const string& address, const ofJson& json);
+	enum RequestType{
+		REQUEST_INFO,
+		REQUEST_DATA
+	};
+	
+	void makeRequest(const string& address,  RequestType requestType, const ofJson& requestData = ofJson());
+	
+	void requestInfoCallback(const ofJson& info);
+	void requestDataCallback(const ofJson& data);
+	
 };
 
 

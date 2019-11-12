@@ -35,63 +35,143 @@ bool ofxRunway::setup(ofxRunwayListener* listenerClass, const string& host){
 	return setup(*listenerClass, host);
 }
 //----------------------
-bool ofxRunway::getTypesLookup() {
-	if(ioTypesSet){
-		return true;
+void ofxRunway::requestInfoCallback(const ofJson& info){
+	infoJson = info;
+	
+	ofJson inputs = infoJson["inputs"];
+	ofJson outputs = infoJson["outputs"];
+	
+	for (int i=0; i<inputs.size(); i++) {
+		cout << "added input : " << inputs[i]["name"] <<endl;
+		inputTypes[inputs[i]["name"]].set(inputs[i]);
 	}
+	for (int i=0; i<outputs.size(); i++) {
+		cout << "added output : " << outputs[i]["name"] << " of type: " << outputs[i]["type"] <<endl;
+		outputTypes[outputs[i]["name"]].set(outputs[i]);
+	}
+	ioTypesSet = true;
+	state = OFX_RUNWAY_CONNECTED;
+	ofNotifyEvent(infoEvent, infoJson, this);
+}
+//----------------------
+void ofxRunway::requestDataCallback(const ofJson& data){
+//					ofLogVerbose("ofxRunway::requestDataCallback") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
+					ofxRunwayData dataToSend;
+		dataToSend.data = data;//response->json();
+	//
+					state = OFX_RUNWAY_RUNNING;
+					// send bundle back to app
+					output.send(dataToSend);
+}
+//----------------------
+void ofxRunway::makeRequest(const string& address,  RequestType requestType,const ofJson& requestData){
 	ofxHTTP::Client client;
-	ofxHTTP::GetRequest request(host+"/info");
+	std::unique_ptr<ofxHTTP::Request> request;
 	ofxHTTP::Context context;
+	
+	if(requestType == REQUEST_INFO){
+		request = make_unique<ofxHTTP::GetRequest>(address);
+	}else{
+		request = make_unique<ofxHTTP::JSONRequest>(address, requestData, Poco::Net::HTTPMessage::HTTP_1_1);
+	}
+	string funcName = (string)((requestType == REQUEST_INFO)?"request info": "request data");
 	
 	try
 	{
-		auto response = client.execute(context, request);
+		auto response = client.execute(context, *request);
 		if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
 		{
-			ofLogVerbose("ofxRunway::getTypesLookup") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
-			
-			
-			ofJson responseJson = response->json();
-			infoJson = responseJson;
-			
-			ofJson inputs = responseJson["inputs"];
-			ofJson outputs = responseJson["outputs"];
-			
-			for (int i=0; i<inputs.size(); i++) {
-				cout << "added input : " << inputs[i]["name"] <<endl;
-				inputTypes[inputs[i]["name"]].set(inputs[i]);
+			if(requestType == REQUEST_INFO){
+				requestInfoCallback(response->json());
+			}else if(requestType == REQUEST_DATA){
+				requestDataCallback(response->json());
 			}
-			for (int i=0; i<outputs.size(); i++) {
-				cout << "added output : " << outputs[i]["name"] << " of type: " << outputs[i]["type"] <<endl;
-				outputTypes[outputs[i]["name"]].set(outputs[i]);
-			}
-			ioTypesSet = true;
-			state = OFX_RUNWAY_CONNECTED;
-			ofNotifyEvent(infoEvent, infoJson, this);
-			
 		}
 		else
 		{
 			state = OFX_RUNWAY_CONNECTION_REFUSED;
 			errorString =  response->statusAndReason();
+			errorString = funcName + " -> " + errorString;
 			ofNotifyEvent(errorEvent, errorString, this);
-			ofLogError("@@@ ofxRunway::getTypesLookup") << errorString;
+			ofLogError("@@@ ofxRunway::"+funcName) << errorString;
 		}
 	}
 	catch (const Poco::Exception& exc)
 	{
 		state = OFX_RUNWAY_CONNECTION_REFUSED;
 		errorString =  exc.displayText();
+		errorString = funcName + " -> " + errorString;
 		ofNotifyEvent(errorEvent, errorString, this);
-		ofLogError("### ofxRunway::getTypesLookup") << errorString;
+		ofLogError("### ofxRunway::"+funcName) << errorString;
 	}
 	catch (const std::exception& exc)
 	{
 		state = OFX_RUNWAY_CONNECTION_REFUSED;
-		errorString =  exc.what();
+		errorString = exc.what();
+		errorString = funcName + " -> " + errorString;
 		ofNotifyEvent(errorEvent, errorString, this);
-		ofLogError("!!! ofxRunway::getTypesLookup") << errorString;
+		ofLogError("!!! ofxRunway::"+funcName) << errorString;
 	}
+
+}
+//----------------------
+bool ofxRunway::getTypesLookup() {
+	if(ioTypesSet){
+		return true;
+	}
+	makeRequest(host+"/info", REQUEST_INFO);
+//	ofxHTTP::Client client;
+//	ofxHTTP::GetRequest request(host+"/info");
+//	ofxHTTP::Context context;
+//	
+//	try
+//	{
+//		auto response = client.execute(context, request);
+//		if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
+//		{
+//			ofLogVerbose("ofxRunway::getTypesLookup") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
+//			
+//			
+//			ofJson responseJson = response->json();
+//			infoJson = responseJson;
+//			
+//			ofJson inputs = responseJson["inputs"];
+//			ofJson outputs = responseJson["outputs"];
+//			
+//			for (int i=0; i<inputs.size(); i++) {
+//				cout << "added input : " << inputs[i]["name"] <<endl;
+//				inputTypes[inputs[i]["name"]].set(inputs[i]);
+//			}
+//			for (int i=0; i<outputs.size(); i++) {
+//				cout << "added output : " << outputs[i]["name"] << " of type: " << outputs[i]["type"] <<endl;
+//				outputTypes[outputs[i]["name"]].set(outputs[i]);
+//			}
+//			ioTypesSet = true;
+//			state = OFX_RUNWAY_CONNECTED;
+//			ofNotifyEvent(infoEvent, infoJson, this);
+//		}
+//		else
+//		{
+//			state = OFX_RUNWAY_CONNECTION_REFUSED;
+//			errorString =  response->statusAndReason();
+//			ofNotifyEvent(errorEvent, errorString, this);
+//			ofLogError("@@@ ofxRunway::getTypesLookup") << errorString;
+//		}
+//	}
+//	catch (const Poco::Exception& exc)
+//	{
+//		state = OFX_RUNWAY_CONNECTION_REFUSED;
+//		errorString =  exc.displayText();
+//		ofNotifyEvent(errorEvent, errorString, this);
+//		ofLogError("### ofxRunway::getTypesLookup") << errorString;
+//	}
+//	catch (const std::exception& exc)
+//	{
+//		state = OFX_RUNWAY_CONNECTION_REFUSED;
+//		errorString =  exc.what();
+//		ofNotifyEvent(errorEvent, errorString, this);
+//		ofLogError("!!! ofxRunway::getTypesLookup") << errorString;
+//	}
 	return ioTypesSet;
 }
 
@@ -116,47 +196,49 @@ void ofxRunway::updateThread()
 		
 		if(!ioTypesSet) getTypesLookup();
 		
-		// setup json request
-		ofxHTTP::Client client;
-		ofxHTTP::JSONRequest request(host+"/query");
-		request.setJSON(dataToReceive.data);
-		// Send them to Runway server
-		try
-		{
-			auto response = client.execute(request);
-			if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
-			{
-				
-				ofLogVerbose("ofxRunway::updateThread") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
-				ofxRunwayData dataToSend;
-				dataToSend.data = response->json();
-
-				state = OFX_RUNWAY_RUNNING;
-				// send bundle back to app
-				output.send(dataToSend);
-			}
-			else
-			{
-				state = OFX_RUNWAY_CONNECTION_REFUSED;
-				errorString =  response->statusAndReason();
-				ofNotifyEvent(errorEvent, errorString, this);
-				ofLogError("@@@ ofxRunway::updateThread") << errorString;
-			}
-		}
-		catch (const Poco::Exception& exc)
-		{
-			state = OFX_RUNWAY_CONNECTION_REFUSED;
-			errorString =  exc.displayText();
-			ofNotifyEvent(errorEvent, errorString, this);
-			ofLogError("### ofxRunway::updateThread ") << errorString;
-		}
-		catch (const std::exception& exc)
-		{
-			errorString =  exc.what();
-			ofNotifyEvent(errorEvent, errorString, this);
-			state = OFX_RUNWAY_CONNECTION_REFUSED;
-			ofLogError("!!! ofxRunway::updateThread ") << errorString;
-		}
+		makeRequest(host+"/query",REQUEST_DATA, dataToReceive.data);
+//		
+//		// setup json request
+//		ofxHTTP::Client client;
+//		ofxHTTP::JSONRequest request(host+"/query");
+//		request.setJSON(dataToReceive.data);
+//		// Send them to Runway server
+//		try
+//		{
+//			auto response = client.execute(request);
+//			if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
+//			{
+//				
+//				ofLogVerbose("ofxRunway::updateThread") << "Response success, expecting " << response->estimatedContentLength() << " bytes.";
+//				ofxRunwayData dataToSend;
+//				dataToSend.data = response->json();
+//
+//				state = OFX_RUNWAY_RUNNING;
+//				// send bundle back to app
+//				output.send(dataToSend);
+//			}
+//			else
+//			{
+//				state = OFX_RUNWAY_CONNECTION_REFUSED;
+//				errorString =  response->statusAndReason();
+//				ofNotifyEvent(errorEvent, errorString, this);
+//				ofLogError("@@@ ofxRunway::updateThread") << errorString;
+//			}
+//		}
+//		catch (const Poco::Exception& exc)
+//		{
+//			state = OFX_RUNWAY_CONNECTION_REFUSED;
+//			errorString =  exc.displayText();
+//			ofNotifyEvent(errorEvent, errorString, this);
+//			ofLogError("### ofxRunway::updateThread ") << errorString;
+//		}
+//		catch (const std::exception& exc)
+//		{
+//			errorString =  exc.what();
+//			ofNotifyEvent(errorEvent, errorString, this);
+//			state = OFX_RUNWAY_CONNECTION_REFUSED;
+//			ofLogError("!!! ofxRunway::updateThread ") << errorString;
+//		}
 		
 		busy = false;
 	}
