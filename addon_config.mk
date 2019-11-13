@@ -24,7 +24,11 @@ meta:
 common:
 	# dependencies with other addons, a list of them separated by spaces 
 	# or use += in several lines
-	# ADDON_DEPENDENCIES =
+	ADDON_DEPENDENCIES = ofxHTTP
+	ADDON_DEPENDENCIES += ofxIO
+	ADDON_DEPENDENCIES += ofxMediaType
+	ADDON_DEPENDENCIES += ofxNetworkUtils
+	ADDON_DEPENDENCIES += ofxSSLManager
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
