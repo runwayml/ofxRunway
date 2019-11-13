@@ -29,37 +29,31 @@
 
 #include "ofMain.h"
 #include "ofxRunway.h"
-#include "ofxGui.h"
-class ofApp : public ofBaseApp{
-
-	public:
-		void setup();
-		void update();
-		void draw();
-		void keyPressed(int key);
-		void keyReleased(int key);
-		void mouseMoved(int x, int y );
-		void mouseDragged(int x, int y, int button);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		void mouseEntered(int x, int y);
-		void mouseExited(int x, int y);
-		void windowResized(int w, int h);
-		void dragEvent(ofDragInfo dragInfo);
-		void gotMessage(ofMessage msg);
-
-    ofxRunway runway;
 
 
-ofImage contentImage;
-ofImage runwayResult;
-
-// status
-string status = "Press 'c' to select content image";
-// Callback functions that process what Runway sends back
-void runwayDataEvent(ofJson& runwayData);
-void runwayInfoEvent(ofJson& info);
-void runwayErrorEvent(string& message);
-void sendFrameToRunway();
-
+// make sure you make your ofApp or class to inherit from ofxRunwayListener
+class ofApp : public ofBaseApp, public ofxRunwayListener{
+	
+public:
+	void setup();
+	void update();
+	void draw();
+	
+	void keyReleased(int key);
+	
+	void loadFile();
+	
+	ofxRunway runway;
+	
+	ofImage runwayResult;
+	
+	ofImage contentImage;
+	
+	void sendFrameToRunway();
+	
+	// Callback functions that process what Runway sends back
+	void runwayInfoEvent(ofJson& info);
+	void runwayErrorEvent(string& message);
+	
+	bool bWaitingForResponse = false;
 };
