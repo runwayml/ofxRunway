@@ -8,12 +8,12 @@
 [openFrameworks](http://openframeworks.cc/) addon that allows you to easily integrate  [RunwayML](https://runwayml.com/) into your openFrameworks App. 
 It contains examples on most of the currently available models.
 
-##Install
+## Install
 Download and copy or `git clone` this addon into your openFrameworks addons folder.
 
 Generate or update the example projects by dragging their folder onto the projectGenerator and hitting "update" or "generate".
 
-##Dependencies
+## Dependencies
 
 You'll need to install the following addons for this addon to work.
 
@@ -38,7 +38,7 @@ For models that ingest images there are usualy two examples, one which uses your
 
 This is still a work in progress. Contributions are welcomed!
 
-##History
+## History
 * v1. [Original addon](https://github.com/genekogan/ofxRunway) by [Gene Kogan](https://github.com/genekogan/)
 * v2. Updated, improoved and a lot of examples by [Roy Macdonald](https://github.com/roymacdonald/)
 
