@@ -17,7 +17,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	if(bWaitingForResponse){
-		runway.get("image", runwayResult);
+		runway.get("stylizedImage", runwayResult);
 	}
 }
 //--------------------------------------------------------------
@@ -62,7 +62,7 @@ void ofApp::sendFrameToRunway(){
 	}
 	if(runway.isBusy()) return;
 	
-	runway.send("content_image", contentImage, OFX_RUNWAY_JPG);
+	runway.send("contentImage", contentImage, OFX_RUNWAY_JPG);
 	
 	bWaitingForResponse = true;
 }
