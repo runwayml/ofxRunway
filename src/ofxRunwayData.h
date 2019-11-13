@@ -36,10 +36,7 @@ public:
 	
 	
 
-	bool getImage(const string& name,
-
-				  ofBaseHasPixels& pixels);
-
+	bool getImage(const string& name,ofBaseHasPixels& pixels);
 	bool getImage(const string& name, ofPixels& pixels);
 	bool getBoolean(const string& name, bool &b);
 	bool getInt(const string& name, int& i);

@@ -224,4 +224,35 @@ const ofxRunwayIOInfo& ofxRunway::getInputType(const string& name){
 const ofxRunwayIOInfo& ofxRunway::getOutputType(const string& name){
 	return getType(name, outputTypes);
 }
-
+//----------------------
+bool ofxRunway::get(const string& name, ofImage& img){
+	if(get(name, img.getPixels())){
+		img.update();
+		return true;
+	}
+	return false;
+}
+//----------------------
+bool ofxRunway::get(const string& name, ofPixels& pix){
+	ofxRunwayData dataToReceive;
+	while (tryReceive(dataToReceive)) {
+		if(dataToReceive.getImage(name, pix)){
+			return true;
+			
+		}
+	}
+}
+//----------------------
+bool ofxRunway::send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type){
+	return send(name, img.getPixels(), type);
+}
+//----------------------
+bool ofxRunway::send(const string& name, const ofPixels& pix, ofxRunwayImageType type){
+	if(isBusy()) return false;
+	
+	ofxRunwayData data;
+	data.setImage(name, pix, type);
+	
+	send(data);
+	return true;
+}

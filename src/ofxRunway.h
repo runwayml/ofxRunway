@@ -66,6 +66,12 @@ public:
 	void send(ofxRunwayData & data);
 	bool tryReceive(ofxRunwayData & data);
 	
+	bool send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG);
+	bool send(const string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG);
+	
+	bool get(const string& name, ofImage& img);
+	bool get(const string& name, ofPixels& pix);
+	
 	bool isBusy() {return busy;}
 	
 	
@@ -91,7 +97,7 @@ public:
 	
 //	const static string OFX_RUNWAY_VERSION = "0.2";
 	
-//	ofEvent<ofxRunwayData> dataEvent;
+
 	ofEvent<ofJson> infoEvent;
 	ofEvent<string> errorEvent;
 	
