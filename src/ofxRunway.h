@@ -57,7 +57,9 @@ public:
 class ofxRunway:public  ofxIO::Thread {
 public:
 	ofxRunway();
-	virtual ~ofxRunway() {}
+	virtual ~ofxRunway() {
+		cout << "~ofxRunway()" << endl;
+	}
 	
 	bool setup(const string& host);
 	bool setup(ofxRunwayListener& listenerClass, const string& host);
@@ -71,6 +73,8 @@ public:
 	
 	bool get(const string& name, ofImage& img);
 	bool get(const string& name, ofPixels& pix);
+	
+	bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	
 	bool isBusy() {return busy;}
 	

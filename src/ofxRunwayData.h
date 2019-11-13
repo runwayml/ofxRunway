@@ -13,6 +13,24 @@ enum ofxRunwayImageType{
 	OFX_RUNWAY_PNG
 };
 
+// simple structure to hold the captions we get back from runway.
+struct ofxRunwayCaption{
+	ofRectangle rect;
+	string label;
+	// it is more practical to declare a draw function here rather than accessing the struct elements directly in the loop draw.
+	void draw(){
+		ofPushStyle();
+		ofNoFill();
+		ofSetLineWidth(2);
+		ofSetColor(0);
+		ofDrawRectangle(rect);
+		ofDrawBitmapStringHighlight(label, rect.getTopLeft() + glm::vec3(3,20,0));
+		ofPopStyle();
+	}
+	
+};
+
+
 class ofxRunwayData {
 public:
 	string address;
@@ -46,6 +64,7 @@ public:
 	bool getStrings(const string& name, vector<string>& s);
 	bool getFloatVectors(const string& name, vector<vector<float> >& v);
 	
+	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	
 	ofJson data;
 	

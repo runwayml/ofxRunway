@@ -238,9 +238,18 @@ bool ofxRunway::get(const string& name, ofPixels& pix){
 	while (tryReceive(dataToReceive)) {
 		if(dataToReceive.getImage(name, pix)){
 			return true;
-			
 		}
 	}
+	return false;
+}
+//----------------------
+bool ofxRunway::get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
+	ofxRunwayData dataToReceive;
+	while (tryReceive(dataToReceive)) {
+		dataToReceive.data.dump(2);
+		return dataToReceive.getCaptions(captions, imgWidth, imgHeight);
+	}
+	return false;
 }
 //----------------------
 bool ofxRunway::send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type){

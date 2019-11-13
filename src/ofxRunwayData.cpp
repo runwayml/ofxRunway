@@ -194,6 +194,27 @@ bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
 bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
 	return getDataArray(name, {"array"}, v);
 }
-
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
+	auto boxes = data["boxes"];
+	auto labels = data["labels"];
+	// as long the array sizes match
+	if(boxes.size() == labels.size() && boxes.size() > 0){
+		// for each array element
+		captions.resize(boxes.size());
+		for(int i = 0 ; i < boxes.size(); i++){
+			
+			captions[i].label = labels[i];
+			// extract values from the float array
+			captions[i].rect.x = (float)boxes[i][0] * imgWidth;
+			captions[i].rect.y = (float)boxes[i][1] * imgHeight;
+			captions[i].rect.width = ((float)boxes[i][2] * imgWidth) - captions[i].rect.x;
+			captions[i].rect.height = ((float)boxes[i][3] * imgHeight) - captions[i].rect.y;
+			
+		}
+		return true;
+	}
+	return false;
+}
 
 
