@@ -15,11 +15,11 @@
 # and the PG will write to the console the kind of error and in which line it is
 
 meta:
-	ADDON_NAME = ofxLearn
+	ADDON_NAME = ofxRunway
 	ADDON_DESCRIPTION = Client application for RunwayML
-	ADDON_AUTHOR = genekogan
+	ADDON_AUTHOR = roymacdonald, genekogan
 	ADDON_TAGS = "machine learning"
-	ADDON_URL = http://github.com/genekogan/ofxRunway
+	ADDON_URL = http://github.com/runwayml/ofxRunway
 
 common:
 	# dependencies with other addons, a list of them separated by spaces 
@@ -29,7 +29,7 @@ common:
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	ADDON_INCLUDES = src
+# 	ADDON_INCLUDES = src
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
@@ -50,8 +50,8 @@ common:
 	# in the src folders in libs and the root of the addon. if your addon needs
 	# to include files in different places or a different set of files per platform
 	# they can be specified here
-	ADDON_SOURCES = src/ofxRunway.cpp
-	ADDON_SOURCES += src/ofxRunway.h
+# 	ADDON_SOURCES = src/ofxRunway.cpp
+# 	ADDON_SOURCES += src/ofxRunway.h
 	
 	# some addons need resources to be copied to the bin/data folder of the project
 	# specify here any files that need to be copied, you can use wildcards like * and ?
