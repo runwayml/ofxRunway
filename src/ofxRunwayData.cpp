@@ -34,7 +34,9 @@ void ofxRunwayData::setImage(const string& name,
 	
 	ofPixels pixelsToReceive = pixels;
 	
-	pixelsToReceive.resize(width, height);
+	if(width != 0 && height != 0){
+		pixelsToReceive.resize(width, height);
+	}
 	// Save the incoming pixels to a buffer using JPG compression.
 	ofBuffer compressedPixels;
 	ofSaveImage(pixelsToReceive, compressedPixels, (type == OFX_RUNWAY_JPG)?OF_IMAGE_FORMAT_JPEG:OF_IMAGE_FORMAT_PNG);
