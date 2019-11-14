@@ -104,7 +104,6 @@ void ofApp::sendFrameToRunway(){
 	if(!contentImage.isAllocated()){
 		return;
 	}
-	if(runway.isBusy()) return;
 	
 	runway.send("image", contentImage, OFX_RUNWAY_JPG);
 	
