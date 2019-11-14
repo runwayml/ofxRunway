@@ -65,7 +65,7 @@ public:
 	bool getFloatVectors(const string& name, vector<vector<float> >& v);
 	
 	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
-	
+	static bool getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight);
 	
 
 	

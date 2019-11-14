@@ -206,10 +206,24 @@ bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
 bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
 	return getDataArray(name, {"array"}, v);
 }
+
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
-	auto boxes = data["boxes"];
-	auto labels = data["labels"];
+bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight){
+	ofJson boxes;
+	ofJson labels;
+	ofJson scores;
+	bool bUsingDenseCap = false;
+	if(data.count("boxes")){
+		boxes = data["boxes"];// used with COCO
+		labels = data["labels"];
+	}else if(data.count("bboxes")){
+		boxes = data["bboxes"];//used with DenseCap
+		labels = data["classes"];
+		scores = data["scores"];
+		bUsingDenseCap = true;
+	}
+
+	
 	// as long the array sizes match
 	if(boxes.size() == labels.size() && boxes.size() > 0){
 		// for each array element
@@ -217,6 +231,9 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 		for(int i = 0 ; i < boxes.size(); i++){
 			
 			captions[i].label = labels[i];
+			if(bUsingDenseCap){
+				captions[i].label += "\nscore: " +ofToString((float)scores[i]);
+			}
 			// extract values from the float array
 			captions[i].rect.x = (float)boxes[i][0] * imgWidth;
 			captions[i].rect.y = (float)boxes[i][1] * imgHeight;
@@ -227,6 +244,10 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 		return true;
 	}
 	return false;
+}
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
+	return getCaptions(captions, data, imgWidth, imgHeight);
 }
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getSegmentationMap(SegmentationMap & segMap, const ofJson& info){
