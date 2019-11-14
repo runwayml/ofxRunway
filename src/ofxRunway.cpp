@@ -38,17 +38,9 @@ bool ofxRunway::setup(ofxRunwayListener* listenerClass, const string& host){
 void ofxRunway::requestInfoCallback(const ofJson& info){
 	infoJson = info;
 	
-	ofJson inputs = infoJson["inputs"];
-	ofJson outputs = infoJson["outputs"];
+	inputTypes = infoJson["inputs"];
+	outputTypes = infoJson["outputs"];
 	
-	for (int i=0; i<inputs.size(); i++) {
-		cout << "added input : " << inputs[i]["name"] <<endl;
-		inputTypes[inputs[i]["name"]].set(inputs[i]);
-	}
-	for (int i=0; i<outputs.size(); i++) {
-		cout << "added output : " << outputs[i]["name"] << " of type: " << outputs[i]["type"] <<endl;
-		outputTypes[outputs[i]["name"]].set(outputs[i]);
-	}
 	ioTypesSet = true;
 	state = OFX_RUNWAY_CONNECTED;
 	ofNotifyEvent(infoEvent, infoJson, this);
@@ -201,27 +193,27 @@ string ofxRunway::getStateAsString(bool bVerbose){
 	return ss.str();
 }
 //----------------------
-const map<string, ofxRunwayIOInfo>& ofxRunway::getInputTypes(){
+const ofJson& ofxRunway::getInputTypes(){
 	return inputTypes;
 }
 //----------------------
-const map<string, ofxRunwayIOInfo>& ofxRunway::getOutputTypes(){
+const ofJson& ofxRunway::getOutputTypes(){
 	return outputTypes;
 }
 //----------------------
-const ofxRunwayIOInfo& getType(const string& name, map<string, ofxRunwayIOInfo>& types){
+const ofJson& getType(const string& name, const ofJson& types){
 	if(types.count(name)){
 		return types[name];
 	}
-	static ofxRunwayIOInfo dummyInfo;
+	static ofJson dummyInfo;
 	return dummyInfo;
 }
 //----------------------
-const ofxRunwayIOInfo& ofxRunway::getInputType(const string& name){
+const ofJson& ofxRunway::getInputType(const string& name){
 	return getType(name, inputTypes);
 }
 //----------------------
-const ofxRunwayIOInfo& ofxRunway::getOutputType(const string& name){
+const ofJson& ofxRunway::getOutputType(const string& name){
 	return getType(name, outputTypes);
 }
 //----------------------

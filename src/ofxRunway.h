@@ -5,33 +5,33 @@
 #include "ofxIO.h"
 #include "ofxRunwayData.h"
 
-
-struct ofxRunwayIOInfo{
-//	ofxRunwayIOInfo(const string& _name,const string& _type,const string& _description):name(_name),type(_type),description(_description){}
-	string name;
-	string type;
-	string description;
-	ofJson json;
-	void set(const ofJson& json){
-		this->json = json;
-		name = json["name"];
-		type = json["type"];
-		string descType = json["description"].type_name();
-		if( descType == "string"){
-			description = json["description"];
-		}
-		
-	}
-	
-	friend std::ostream & operator<<(std::ostream & ostr, const ofxRunwayIOInfo & info){
-		
-		ostr << "name: " << info.name << "  type: " << info.type;
-		if(!info.description.empty())
-		ostr << "  description: " << info.description;
-		ostr << endl;
-		return ostr;
-	}
-};
+//
+//struct ofxRunwayIOInfo{
+////	ofxRunwayIOInfo(const string& _name,const string& _type,const string& _description):name(_name),type(_type),description(_description){}
+//	string name;
+//	string type;
+//	string description;
+//	ofJson json;
+//	void set(const ofJson& json){
+//		this->json = json;
+//		name = json["name"];
+//		type = json["type"];
+//		string descType = json["description"].type_name();
+//		if( descType == "string"){
+//			description = json["description"];
+//		}
+//		
+//	}
+//	
+//	friend std::ostream & operator<<(std::ostream & ostr, const ofxRunwayIOInfo & info){
+//		
+//		ostr << "name: " << info.name << "  type: " << info.type;
+//		if(!info.description.empty())
+//		ostr << "  description: " << info.description;
+//		ostr << endl;
+//		return ostr;
+//	}
+//};
 enum ofxRunwayState{
 
 	/// initial default state
@@ -93,11 +93,11 @@ public:
 	ofRectangle drawStatus(int x = 20, int y = 20,  bool bVerbose = false);
 
 	
-	const ofxRunwayIOInfo& getInputType(const string& name);
-	const ofxRunwayIOInfo& getOutputType(const string& name);
+	const ofJson& getInputType(const string& name);
+	const ofJson& getOutputType(const string& name);
 	
-	const map<string, ofxRunwayIOInfo>& getInputTypes();
-	const map<string, ofxRunwayIOInfo>& getOutputTypes();
+	const ofJson& getInputTypes();
+	const ofJson& getOutputTypes();
 	
 //	const static string OFX_RUNWAY_VERSION = "0.2";
 	
@@ -119,8 +119,8 @@ protected:
 	ofxIO::ThreadChannel<ofxRunwayData> input;
 	ofxIO::ThreadChannel<ofxRunwayData> output;
 	
-	map<string, ofxRunwayIOInfo> inputTypes;
-	map<string, ofxRunwayIOInfo> outputTypes;
+	ofJson inputTypes;
+	ofJson outputTypes;
 
 	string host;
 	int    port;
