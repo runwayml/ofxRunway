@@ -238,21 +238,21 @@ bool ofxRunway::get(const string& name, ofPixels& pix){
 bool ofxRunway::get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
 	ofxRunwayData dataToReceive;
 	while (tryReceive(dataToReceive)) {
-		dataToReceive.data.dump(2);
+//		dataToReceive.data.dump(2);
 		return dataToReceive.getCaptions(captions, imgWidth, imgHeight);
 	}
 	return false;
 }
 //----------------------
-bool ofxRunway::send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type){
-	return send(name, img.getPixels(), type);
+bool ofxRunway::send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type, int resize_width, int resize_height){
+	return send(name, img.getPixels(), type, resize_width, resize_height);
 }
 //----------------------
-bool ofxRunway::send(const string& name, const ofPixels& pix, ofxRunwayImageType type){
+bool ofxRunway::send(const string& name, const ofPixels& pix, ofxRunwayImageType type, int resize_width, int resize_height){
 	if(isBusy()) return false;
 	
 	ofxRunwayData data;
-	data.setImage(name, pix, type);
+	data.setImage(name, pix, type, resize_width, resize_height);
 	
 	send(data);
 	return true;

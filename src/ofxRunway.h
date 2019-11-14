@@ -5,33 +5,6 @@
 #include "ofxIO.h"
 #include "ofxRunwayData.h"
 
-//
-//struct ofxRunwayIOInfo{
-////	ofxRunwayIOInfo(const string& _name,const string& _type,const string& _description):name(_name),type(_type),description(_description){}
-//	string name;
-//	string type;
-//	string description;
-//	ofJson json;
-//	void set(const ofJson& json){
-//		this->json = json;
-//		name = json["name"];
-//		type = json["type"];
-//		string descType = json["description"].type_name();
-//		if( descType == "string"){
-//			description = json["description"];
-//		}
-//		
-//	}
-//	
-//	friend std::ostream & operator<<(std::ostream & ostr, const ofxRunwayIOInfo & info){
-//		
-//		ostr << "name: " << info.name << "  type: " << info.type;
-//		if(!info.description.empty())
-//		ostr << "  description: " << info.description;
-//		ostr << endl;
-//		return ostr;
-//	}
-//};
 enum ofxRunwayState{
 
 	/// initial default state
@@ -68,8 +41,8 @@ public:
 	void send(ofxRunwayData & data);
 	bool tryReceive(ofxRunwayData & data);
 	
-	bool send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG);
-	bool send(const string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG);
+	bool send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
+	bool send(const string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
 	
 	bool get(const string& name, ofImage& img);
 	bool get(const string& name, ofPixels& pix);
