@@ -34,7 +34,10 @@ void ofxRunwayData::setImage(const string& name,
 	
 	ofPixels pixelsToReceive = pixels;
 	
-	if(width != 0 && height != 0){
+	//make sure we dont resize to zero or that we upscale (which makes no sense)
+	if(width != 0 && height != 0 &&
+	   width < pixelsToReceive.getWidth() &&
+	   height < pixelsToReceive.getHeight()){
 		pixelsToReceive.resize(width, height);
 	}
 	// Save the incoming pixels to a buffer using JPG compression.
