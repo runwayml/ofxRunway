@@ -58,5 +58,4 @@ public:
 	void runwayInfoEvent(ofJson& info);
 	void runwayErrorEvent(string& message);
 	
-	bool bWaitingForResponse = false;
 };

@@ -18,9 +18,7 @@ void ofApp::setup(){
 }
 //--------------------------------------------------------------
 void ofApp::update(){
-	if(bWaitingForResponse){
-		runway.get("image", runwayResult);
-	}
+	runway.get("image", runwayResult);
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
@@ -81,7 +79,6 @@ void ofApp::sendFrameToRunway(){
 	data.setFloat("alpha",1.0);
 	// query Runway
 	runway.send(data);
-	bWaitingForResponse = true;
 }
 
 
