@@ -216,5 +216,43 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 	}
 	return false;
 }
-
-
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getSegmentationMap(SegmentationMap & segMap, const ofJson& info){
+	
+	segMap.clear();
+	if(info.count("outputs")){
+		for(auto&o: info["outputs"]){
+			if(o["type"] == "segmentation"){
+				auto& l = o["labelToColor"];
+				for (auto it = l.begin(); it != l.end(); ++it){
+					auto &col = it.value();
+					ofColor c ((int)col[0], (int)col[1],(int)col[2]);
+					string key = it.key();
+					segMap[c] = key;
+				}
+				return true;
+				break;
+			}
+		}
+	}
+	return false;
+}
+//------------------------------------------------------------------------------------------------
+string ofxRunwayData::findSegmentationLabel(const SegmentationMap & segMap, const ofBaseHasPixels& pixels, size_t x, size_t y){
+	return findSegmentationLabel(segMap, pixels.getPixels(), x, y);
+}
+//------------------------------------------------------------------------------------------------
+string ofxRunwayData::findSegmentationLabel(const SegmentationMap & segMap, const ofPixels& pixels, size_t x, size_t y){
+	if(x < pixels.getWidth() && y < pixels.getHeight()){
+		auto c = pixels.getColor(x, y);
+		if(segMap.count(c)){
+			return segMap.at(c);
+		}else{
+			ofLogVerbose("ofxRunwayData::findSegmentationLabel") << " color " << c << " not found.";
+			return "";
+		}
+	}else{
+		ofLogVerbose("ofxRunwayData::findSegmentationLabel") << "coords out of bounds ";
+	}
+	return "";
+}

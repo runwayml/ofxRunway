@@ -66,6 +66,20 @@ public:
 	
 	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	
+	
+
+	
+	struct colorComp {
+		bool operator()(const ofColor& a, const ofColor& b) const {
+			return a.getHex() < b.getHex();
+		}
+	};
+	
+	typedef std::map<ofColor, string, colorComp> SegmentationMap;
+	
+	static bool getSegmentationMap(SegmentationMap & segMap, const ofJson& info);
+	static string findSegmentationLabel(const SegmentationMap & segMap, const ofBaseHasPixels& pixels, size_t x, size_t y);
+	static string findSegmentationLabel(const SegmentationMap & segMap, const ofPixels& pixels, size_t x, size_t y);
 	ofJson data;
 	
 protected:
