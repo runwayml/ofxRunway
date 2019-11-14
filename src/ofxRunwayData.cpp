@@ -38,7 +38,14 @@ void ofxRunwayData::setImage(const string& name,
 	if(width != 0 && height != 0 &&
 	   width < pixelsToReceive.getWidth() &&
 	   height < pixelsToReceive.getHeight()){
-		pixelsToReceive.resize(width, height);
+		
+		ofRectangle original(0,0, pixelsToReceive.getWidth(),
+							 pixelsToReceive.getHeight());
+		ofRectangle resized(0,0,width, height);
+		// with this we make sure that we scale proportionaly
+		original.scaleTo(resized);
+		
+		pixelsToReceive.resize(original.width, original.height);
 	}
 	// Save the incoming pixels to a buffer using JPG compression.
 	ofBuffer compressedPixels;

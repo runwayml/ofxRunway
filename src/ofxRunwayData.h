@@ -37,12 +37,12 @@ public:
 
 	void setImage(const string& name,
 				  const ofBaseHasPixels& pixels,
-				  ofxRunwayImageType type, int width = 0, int height = 0);
+				  ofxRunwayImageType type, int resize_width = 0, int resize_height = 0);
 
 	void setImage(const string& name,
 				  const ofPixels& pixels,
 				  ofxRunwayImageType type,
-				  int width = 0, int height = 0);
+				  int resize_width = 0, int resize_height = 0);
 	
 	void setBoolean(const string& name, bool b);
 	void setInt(const string& name, int i);
