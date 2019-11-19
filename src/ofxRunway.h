@@ -35,9 +35,7 @@ public:
 	static const ofColor gray;
 	
 	ofxRunway();
-	virtual ~ofxRunway() {
-		cout << "~ofxRunway()" << endl;
-	}
+	virtual ~ofxRunway() {}
 	
 	bool setup(const string& host);
 	bool setup(ofxRunwayListener& listenerClass, const string& host);
