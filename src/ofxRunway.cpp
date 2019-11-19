@@ -2,6 +2,9 @@
 #include "ofxHTTP.h"
 
 
+const ofColor ofxRunway::green1 = {115, 229, 162, 255};
+const ofColor ofxRunway::green2 = { 51, 178, 121, 255};
+const ofColor ofxRunway::gray   = { 28,  28,  28, 255};
 
 //----------------------
 ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {

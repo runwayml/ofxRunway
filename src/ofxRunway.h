@@ -29,6 +29,11 @@ public:
 
 class ofxRunway:public  ofxIO::Thread {
 public:
+	
+	static const ofColor green1;
+	static const ofColor green2;
+	static const ofColor gray;
+	
 	ofxRunway();
 	virtual ~ofxRunway() {
 		cout << "~ofxRunway()" << endl;
