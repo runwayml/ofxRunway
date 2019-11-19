@@ -1,4 +1,5 @@
 #include "ofxRunway.h"
+#include "ofxHTTP.h"
 
 
 
@@ -257,3 +258,33 @@ bool ofxRunway::send(const string& name, const ofPixels& pix, ofxRunwayImageType
 	send(data);
 	return true;
 }
+//----------------------
+bool ofxRunway::send(const string& name, string& data){
+	if(isBusy()) return false;
+	
+	ofxRunwayData runWayData;
+	runWayData.setString(name, data);
+	
+	send(runWayData);
+	return true;
+
+}
+//----------------------
+bool ofxRunway::get(const string& name, string& data){
+	ofxRunwayData dataToReceive;
+	while (tryReceive(dataToReceive)) {
+		return dataToReceive.getString(name, data);
+	}
+	return false;
+}
+
+//----------------------
+bool ofxRunway::isServerAvailable(){
+	return (state != OFX_RUNWAY_DISCONNECTED && state != OFX_RUNWAY_CONNECTION_REFUSED);
+	
+}
+
+
+
+
+

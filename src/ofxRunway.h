@@ -43,9 +43,12 @@ public:
 	
 	bool send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
 	bool send(const string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
+	bool send(const string& name, string& data);
 	
 	bool get(const string& name, ofImage& img);
 	bool get(const string& name, ofPixels& pix);
+	
+	bool get(const string& name, string& data);
 	
 	bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	
@@ -78,6 +81,8 @@ public:
 	ofEvent<ofJson> infoEvent;
 	ofEvent<string> errorEvent;
 	
+	
+	bool isServerAvailable();
 	
 protected:
 
