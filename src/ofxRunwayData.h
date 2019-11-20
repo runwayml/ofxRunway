@@ -33,7 +33,6 @@ struct ofxRunwayCaption{
 
 class ofxRunwayData {
 public:
-	string address;
 
 	void setImage(const string& name,
 				  const ofBaseHasPixels& pixels,
