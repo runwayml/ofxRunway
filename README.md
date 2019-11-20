@@ -150,20 +150,14 @@ bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
   * `y` y-axiscoordinate where to draw the text
   * `bVerbose` if true draw the verbose (full text) for the current state.
   * returns the bounding box of the text drawn.
-
-* ```cpp
-const ofJson& getInputType(const string& name);
-const ofJson& getOutputType(const string& name);
-```
-  * Returns the `ofJson` object with info for the input or output types with the name passed as an argument.
-
-
-* ```cpp
-const ofJson& getInputTypes();
-const ofJson& getOutputTypes();
-```
-  * Returns the full `ofJson` object with info about the sent and received data.
-
+* `const ofJson& getInputType(const string& name);`
+  * Returns the `ofJson` object with info for the input types with the name passed as an argument.
+* `const ofJson& getOutputType(const string& name);`
+  * Returns the `ofJson` object with info for the output types with the name passed as an argument.
+* `const ofJson& getInputTypes();`
+  * Returns the full `ofJson` object with info about the sent data.
+* `const ofJson& getOutputTypes();`
+  * Returns the full `ofJson` object with info about the received data.
 
 * `bool isServerAvailable();`
   * Returns true if connected to the server.
