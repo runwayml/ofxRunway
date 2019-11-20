@@ -68,7 +68,7 @@ ofxRunway has the following classes
 ```cpp
 runway.setup(this, "http://localhost:8000");
 ```
-asumming that you are calling it from within `ofApp` and the second parameter is the correct one.
+assuming that you are calling it from within `ofApp` and the second parameter is the correct one.
 
 
 
@@ -78,7 +78,7 @@ asumming that you are calling it from within `ofApp` and the second parameter is
   * Is the main class, which is in charge of managing the sending and receiving of data.
   * All the HTTP calls are executed on a different thread, so it wont block your app while waiting for a response.
   *  It includes several handy functions for sending and receiving different data types.
-  *  It is designed to be thread safe. You dont need to take care of mutexes.
+  *  It is designed to be thread safe. You don't need to take care of mutexes.
 
 ##### **Public Methods**
 ######  setup
@@ -93,7 +93,7 @@ asumming that you are calling it from within `ofApp` and the second parameter is
 	 ```
 
 ######  send
-* send an `ofxRunwayData` instance with the necesary data by calling ` void send(ofxRunwayData & data);`
+* send an `ofxRunwayData` instance with the necessary data by calling ` void send(ofxRunwayData & data);`
 * This will create the call on its own thread, so it wont block your main app.
 * There are also the following handy functions to be used when you only need to send a single item.
     ```cpp
@@ -170,6 +170,72 @@ bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 * `ofEvent<string> errorEvent;`
   * Event triggered when a there has been an error, either in sending or receiving. The event will contain a string with information about the error.
 
+
+####  **ofxRunwayData**
+
+  * This class provides useful functions for setting and getting data into the JSON data required by Runway.
+  * Essentially it stores the data in an `ofJson` object although it has a lot of very useful functions for setting and getting the data.
+
+##### **Public methods**
+###### Getters
+
+  * The following get functions require a string as the first argument which is the name of the element you want to get or set. These names are the ones given by runway in its infoEvent (you'll see these printed in the console).
+  * The second argument of these is a reference to an object of the type you want to get.
+  * It will return true if the element was found and its info was copied into the reference passed in the second argument.  
+  * All these behave in the same way, and only differ on the data type asked for.
+  * These are named accordingly to the data type that these will get.
+
+	* `bool getImage(const string& name,ofBaseHasPixels& pixels);`
+	* `bool getImage(const string& name, ofPixels& pixels);`
+	* `bool getBoolean(const string& name, bool &b);`
+	* `bool getInt(const string& name, int& i);`
+	* `bool getFloat(const string& name, float& f);`
+	* `bool getString(const string& name, string& s);`
+	* `bool getFloats(const string& name, vector<float>& f);`
+	* `bool getStrings(const string& name, vector<string>& s);`
+	* `bool getFloatVectors(const string& name, vector<vector<float> >& v);`
+
+* example
+```cpp
+    ofxRunwayData dataToReceive;// this might be declared elsewhere
+    ofImage img;// this might be declared elsewhere
+		if(dataToReceive.getImage("image", img)){
+		    //if it returned true then it means that an image was extracted form the `dataToReceive` object, decoded and copied into the `img` object.
+		}
+```
+###### Get captions
+There is the`ofxRunwayCaption` struct, whose declaration is the following.
+```cpp
+  struct ofxRunwayCaption{
+	ofRectangle rect;
+	string label;
+	void draw();
+};
+```
+
+  * The following two functions allow you to get a collection of `ofxRunwayCaption` objects. Its main difference is that one is `static` while the other is not.
+
+  * You pass a reference to a `vector<ofxRunwayCaption>` along with the width and height of the image over which this captions go, so these can get scaled accordingly.
+
+	* `bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);`
+	* `static bool getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight);`
+
+
+###### Get segmentation map
+  * The segmentation map is simply a bunch of unique colors which have been associated with a label (string).
+
+	typedef std::map<ofColor, string, colorComp> SegmentationMap;
+
+	* static bool getSegmentationMap(SegmentationMap & segMap, const ofJson& info);
+	* static string findSegmentationLabel(const SegmentationMap & segMap, const ofBaseHasPixels& pixels, size_t x, size_t y);
+	* static string findSegmentationLabel(const SegmentationMap & segMap, const ofPixels& pixels, size_t x, size_t y);
+
+
+
+##### **Public variables**
+
+* `ofJson data;`
+  This is where the actual data is stored.
 
 ## Contributing
 
