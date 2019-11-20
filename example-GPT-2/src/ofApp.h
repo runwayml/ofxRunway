@@ -20,7 +20,7 @@
 // RUNWAY
 // www.runwayapp.ai
 
-// Receive HTTP messages from Runway
+// Interact with GPT-2 algorithm from Runway
 // example by Roy Macdonald
 
 
@@ -31,17 +31,6 @@
 
 // make sure you make your ofApp or class to inherit from ofxRunwayListener
 class ofApp : public ofBaseApp, public ofxRunwayListener{
-	
-	
-	/// SUPER IMPORTANT!!!
-	/// Uncomment from the list below the model that you're going to use.
-	/// Make sure there is only one uncommented
-	
-//	{"vae-lagging-encoder-poetry", {{ "z"/* vector */, "temperature"/* number */, "in"/* text */, "temperature"/* number */ }, { "out"/* text */, "out"/* text */ }}}
-//	{"OpenGPT-2", {{ "prompt"/* text */ }, { "text"/* text */ }}}
-//	{"GPT-2", {{ "prompt"/* text */, "seed"/* number */ }, { "text"/* text */ }}}
-
-	
 	
 public:
 	void setup();

@@ -9,8 +9,7 @@ void ofApp::setup(){
 	runway.setup(this, "http://localhost:8000");
 	runway.start();
 	
-//	promptForInput();
-	setPrompt("Chile's President Sebastián Piñera has acknowledged that the police committed abuses when dealing with protests which have been rocking the country for the past month.");
+	promptForInput();
 	
 }
 //--------------------------------------------------------------
