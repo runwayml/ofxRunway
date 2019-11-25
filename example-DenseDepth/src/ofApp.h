@@ -30,19 +30,11 @@
 
 #include "ofMain.h"
 
-#define USE_RUNWAY
-
-#define USE_CAM_GRABBER
-#ifdef USE_RUNWAY
 #include "ofxRunway.h"
-#endif
 #include "ofxGui.h"
 
 // make sure you make your ofApp or class to inherit from ofxRunwayListener
-class ofApp : public ofBaseApp
-#ifdef USE_RUNWAY
-, public ofxRunwayListener
-#endif
+class ofApp : public ofBaseApp, public ofxRunwayListener
 {
 public:
 	void setup();
@@ -51,25 +43,23 @@ public:
 	
 	void keyReleased(int key);
 	
-#ifdef USE_RUNWAY
+
 	ofxRunway runway;
 	ofImage runwayResult;
-#endif
-#ifdef USE_CAM_GRABBER
+
 	ofVideoGrabber grabber;
-#endif
 	
 	ofShader shader;
 	ofEasyCam cam;
-//	ofPlanePrimitive plane;
+
 	ofVboMesh	sphereVbo;
 	
 	// Callback functions that process what Runway sends back
-#ifdef USE_RUNWAY
 	void runwayInfoEvent(ofJson& info);
 	void runwayErrorEvent(string& message);
-#endif
 
+	
+	// GUI parameters
 	ofxPanel gui;
 	ofParameter<float> depthScale = {"Depth Scale", 300, 0, 1000};
 	ofParameter<float> pointSize = {"Point Size", 4, 1, 30};
