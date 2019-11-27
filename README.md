@@ -28,7 +28,7 @@ You'll need to install the following addons for this addon to work.
 
 Open an example and compile. When running it you must have your RunwayML app running, with the same model as the example in your workspace and running. The examples are named after each model.
 
-For models that ingest images there are usually two examples: one which uses your computers webcam and continously streams frames to RunwayML, and the other one opens an image file and processes it once.
+For models that ingest images there are usually two examples: one which uses your computer's webcam and continously streams frames to RunwayML, and the other one opens an image file and processes it once.
 
 
 ## Explanation
@@ -37,7 +37,7 @@ The Runway's app method of communication with other applications is using some n
 
 ofxRunway takes charge of making the needed requests via HTTP on its own thread, as well as receiving the response and processing it when needed; if the response is an image it will decode it and put into an ofImage.
 
-Runway expects to receive and return data in the JSON format.
+RunwayML expects to receive and return data in the JSON format.
 
 The particular format for what is sent and received can be queried by calling
 `http://localhost:8000/info` which will return a JSON file with the structure for the input and output packages.
@@ -130,10 +130,10 @@ bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
  `ofxRunwayState` is an enum which has the following possible values
 
   * `OFX_RUNWAY_DISCONNECTED` initial default state
-  * `OFX_RUNWAY_SETUP` it has been setup but no attempt of getting any data from the runway server has been done
-  * `OFX_RUNWAY_CONNECTED`  setup and connected to runway server but no data has been received back
+  * `OFX_RUNWAY_SETUP` it has been setup but no attempt of getting any data from the RunwayML server has been done
+  * `OFX_RUNWAY_CONNECTED`  setup and connected to RunwayML server but no data has been received back
   * `OFX_RUNWAY_RUNNING`  connected and getting data from server
-  * `OFX_RUNWAY_CONNECTION_REFUSED` There was an error while trying to connect to server. Probably runway is not running or the workspace in runway is not running.
+  * `OFX_RUNWAY_CONNECTION_REFUSED` There was an error while trying to connect to server. Probably RunwayML is not running or the workspace in RunwayML is not running.
 
 * `string getStateAsString(bool bVerbose = false);`
 
@@ -173,13 +173,13 @@ bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 
 ####  **ofxRunwayData**
 
-  * This class provides useful functions for setting and getting data into the JSON data required by Runway.
+  * This class provides useful functions for setting and getting data into the JSON data required by RunwayML.
   * Essentially it stores the data in an `ofJson` object although it has a lot of very useful functions for setting and getting the data.
 
 ##### **Public methods**
 ###### Getters
 
-  * The following get functions require a string as the first argument which is the name of the element you want to get or set. These names are the ones given by runway in its infoEvent (you'll see these printed in the console).
+  * The following get functions require a string as the first argument which is the name of the element you want to get or set. These names are the ones given by RunwayML in its infoEvent (you'll see these printed in the console).
   * The second argument of these is a reference to an object of the type you want to get.
   * It will return true if the element was found and its info was copied into the reference passed in the second argument.  
   * All these behave in the same way, and only differ on the data type asked for.
