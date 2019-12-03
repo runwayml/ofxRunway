@@ -48,8 +48,11 @@ public:
 	
 	// DenseCap returns captions only
 	vector<ofxRunwayCaption> captions;
+	///  ofxRunwayCaption is a simple struct with two data elements; an ofRectangle called `rect` and a string called `label`.
+	/// As well it has a utility function for drawing both.
+	/// It is declared in ofxRunwayData.h
 	
-	
+
 	// Callback functions that process what Runway sends back
 	void runwayInfoEvent(ofJson& info);
 	void runwayErrorEvent(string& message);
