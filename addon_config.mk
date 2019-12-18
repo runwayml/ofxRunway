@@ -29,12 +29,11 @@ common:
 	ADDON_DEPENDENCIES += ofxMediaType
 	ADDON_DEPENDENCIES += ofxNetworkUtils
 	ADDON_DEPENDENCIES += ofxSSLManager
-	ADDON_DEPENDENCIES += ofxPoco
 	
 	# include search paths, this will be usually parsed from the file system
 	# but if the addon or addon libraries need special search paths they can be
 	# specified here separated by spaces or one per line using +=
-	ADDON_INCLUDES = src
+# 	ADDON_INCLUDES = src
 	
 	# any special flag that should be passed to the compiler when using this
 	# addon
@@ -55,8 +54,7 @@ common:
 	# in the src folders in libs and the root of the addon. if your addon needs
 	# to include files in different places or a different set of files per platform
 	# they can be specified here
-	ADDON_SOURCES = src/ofxRunway.cpp
-	ADDON_SOURCES += ofxRunwayData.cpp
+# 	ADDON_SOURCES = src/ofxRunway.cpp
 # 	ADDON_SOURCES += src/ofxRunway.h
 	
 	# some addons need resources to be copied to the bin/data folder of the project
