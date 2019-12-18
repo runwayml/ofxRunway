@@ -250,6 +250,37 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 	return getCaptions(captions, data, imgWidth, imgHeight);
 }
 //------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight){
+	return getPoses(poses, data, imgWidth, imgHeight);
+}
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight){
+	ofJson jpos;
+	ofJson scores;
+	bool bUsingDenseCap = false;
+	if(data.count("poses")){
+		jpos = data["poses"];
+		scores = data["scores"];
+	}
+
+//	std::cout << "imgWidth: " << imgWidth << " imgHeight: " << imgHeight << std::endl;
+	// as long the array sizes match
+	if(jpos.size() == scores.size() && jpos.size() > 0){
+		// for each array element
+		poses.resize(jpos.size());
+		for(size_t i = 0 ; i < poses.size(); i++){
+			poses[i].joints.resize(jpos[i].size());
+			for(size_t j = 0; j < poses[i].joints.size(); j++){
+				poses[i].joints[j] = {(float)jpos[i][j][0] * imgWidth, (float)jpos[i][j][1] * imgHeight};
+			}
+			poses[i].score = scores[i];
+		}
+		return true;
+	}
+	return false;
+}
+
+//------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getSegmentationMap(SegmentationMap & segMap, const ofJson& info){
 	
 	segMap.clear();
@@ -289,3 +320,90 @@ string ofxRunwayData::findSegmentationLabel(const SegmentationMap & segMap, cons
 	}
 	return "";
 }
+//------------------------------------------------------------------------------------------------
+void ofxRunwayCaption::draw(){
+	ofPushStyle();
+	ofNoFill();
+	ofSetLineWidth(2);
+	ofSetColor(0);
+	ofDrawRectangle(rect);
+	ofDrawBitmapStringHighlight(label, rect.getTopLeft() + glm::vec3(3,20,0));
+	ofPopStyle();
+}
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayPoseFeatures::setup(const ofJson& info){
+	bool bSuccess = false;
+//	if(info.count("outputs") == 0){
+//		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output\" element");
+//		return  false;
+//	}
+	if(info[0].count("itemType") == 0){
+		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType\" element");
+		return  false;
+	}
+	
+	ofJson items = info[0]["itemType"];
+	if(items.count("length") == 0){
+		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType/length\" element");
+		return  false;
+	}
+	
+	size_t numItems = items["length"];
+				
+	if(items.count("labels") == 0){
+		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType/labels\" element");
+		return  false;
+	}
+	
+	ofJson labels = items["labels"];
+	for(size_t i = 0; i < numItems; i++){
+		indexMap[(string)labels.at(i)] = i;
+	}
+	 
+	
+	if(items.count("connections") == 0){
+		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType/connections\" element");
+		return  false;
+	}
+	ofJson conn = items["connections"];
+	
+
+//	cout << "ofxRunwayPoseFeatures::setup numItems " << numItems << endl;
+	for(auto& c: conn){
+		string j0 = c[0];
+		string j1 = c[1];
+		
+		if(indexMap.count(j0) && indexMap.count(j1)){
+			connections.push_back({ indexMap[j0], indexMap[j1] });
+			bSuccess = true;
+		}else{
+			cout << "indexMap does not have element " << j0 << " or " << j1 << endl;
+			bSuccess = false;
+		}
+	}
+	if(!bSuccess){
+		
+		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly");
+	}
+	bIsSetup = bSuccess;
+	return bSuccess;
+}
+//------------------------------------------------------------------------------------------------
+void ofxRunwayPose::draw(const ofxRunwayPoseFeatures & features){
+	ofPushStyle();
+	
+	if(features.isSetup() && features.size() == joints.size()){
+		ofSetLineWidth(3);
+		ofSetColor(ofColor::magenta);
+		for(auto& c: features.connections){
+			ofDrawLine(joints[c[0]], joints[c[1]]);
+		}
+	}
+	ofSetColor(ofColor::yellow);
+	for(auto&j: joints){
+		ofDrawCircle(j, 5);
+	}
+	
+	ofPopStyle();
+}
+

@@ -14,22 +14,34 @@ enum ofxRunwayImageType{
 };
 
 // simple structure to hold the captions we get back from runway.
-struct ofxRunwayCaption{
+class ofxRunwayCaption{
+public:
 	ofRectangle rect;
 	string label;
 	// it is more practical to declare a draw function here rather than accessing the struct elements directly in the loop draw.
-	void draw(){
-		ofPushStyle();
-		ofNoFill();
-		ofSetLineWidth(2);
-		ofSetColor(0);
-		ofDrawRectangle(rect);
-		ofDrawBitmapStringHighlight(label, rect.getTopLeft() + glm::vec3(3,20,0));
-		ofPopStyle();
-	}
-	
+	void draw();
+};
+/// Data structure that holds the info about the names of the body joints and how these are connected
+class ofxRunwayPoseFeatures{
+public:
+	// this function has to be called within the runwayInfoEvent(ofJson& info) callback function
+	bool setup(const ofJson& info);
+	map<std::string, size_t> indexMap;
+	vector< vector< size_t> > connections;
+	size_t size() const {return indexMap.size();}
+	bool isSetup() const {return bIsSetup;}
+private:
+	bool bIsSetup = false;
 };
 
+/// Data structure that holds the info that runwayML extracts from human poses using models like PoseNet
+class ofxRunwayPose{
+public:
+	vector<glm::vec2> joints;
+	float score;
+	void draw(const ofxRunwayPoseFeatures & features);
+	
+};
 
 class ofxRunwayData {
 public:
@@ -65,6 +77,9 @@ public:
 	
 	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	static bool getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight);
+	
+	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight);
+	static bool getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight);
 	
 
 	
