@@ -3,7 +3,7 @@
 
 void ofApp::setup(){
 	//uncomment the following line if you want a verbose log (which means a lot of info will be printed)
-	//	ofSetLogLevel(OF_LOG_VERBOSE);
+		ofSetLogLevel(OF_LOG_VERBOSE);
 	loadFile();
 	
 	gui.setup("Pose Net");
@@ -107,7 +107,7 @@ void ofApp::sendFrameToRunway(){
 // Runway sends information about the current model
 //--------------------------------------------------------------
 void ofApp::runwayInfoEvent(ofJson& info){
-//	ofLogNotice("ofApp::runwayInfoEvent") << endl << info.dump(2) <<endl;
+	ofLogNotice("ofApp::runwayInfoEvent") << endl << info.dump(2) <<endl;
 }
 // if anything goes wrong
 //--------------------------------------------------------------

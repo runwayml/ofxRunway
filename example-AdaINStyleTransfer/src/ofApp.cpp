@@ -23,10 +23,8 @@ void ofApp::setup(){
 void ofApp::update(){
 	grabber.update();
 	if(grabber.isFrameNew()){
-		if(!styleImage.isAllocated()){
-			return;
-		}
-		if(runway.isBusy()) return;
+		if(styleImage.isAllocated() && !runway.isBusy()){
+		
 		
 		ofxRunwayData data;
 		// set style image
@@ -39,6 +37,7 @@ void ofApp::update(){
 		data.setFloat("alpha",1.0);
 		// query Runway
 		runway.send(data);
+		}
 	}
 	runway.get("image", runwayResult);
 }

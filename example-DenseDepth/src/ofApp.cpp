@@ -39,8 +39,8 @@ void ofApp::setup(){
 void ofApp::update(){
 	grabber.update();
 	
-	if(grabber.isFrameNew()){
-		if(runway.isBusy()) return;
+	if(grabber.isFrameNew() && !runway.isBusy()){
+		
 		runway.send("image", grabber);
 	}
 	runway.get("depth_image", runwayResult);

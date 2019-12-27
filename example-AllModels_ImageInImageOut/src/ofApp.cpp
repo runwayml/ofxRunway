@@ -23,8 +23,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	grabber.update();
-	if(grabber.isFrameNew()){
-		if(runway.isBusy()) return;
+	if(grabber.isFrameNew() && !runway.isBusy()){
 		
 		ofxRunwayData data;
 		
