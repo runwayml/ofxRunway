@@ -125,7 +125,7 @@ bool ofxRunwayData::getImage(const string& name,
 		string imageB64 = data[name].dump();
 		imageB64 = imageB64.substr(1, imageB64.size()-2);//+"==";;
 		imageB64 = imageB64.substr(imageB64.find(",") + 1);
-
+		
 		ofBuffer decodedBuffer;
 		decodedBuffer.set(ofxIO::Base64Encoding::decode(imageB64));
 		
@@ -148,7 +148,7 @@ bool ofxRunwayData::getData(const string& name, const vector<string>& type_names
 	if(bIsVector && type == "array"){
 		type = data[name][0].type_name();
 	}
-	 
+	
 	for(auto& tn: type_names){
 		if (type == tn){
 			T t = data[name];
@@ -222,7 +222,7 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, const ofJson
 		scores = data["scores"];
 		bUsingDenseCap = true;
 	}
-
+	
 	
 	// as long the array sizes match
 	if(boxes.size() == labels.size() && boxes.size() > 0){
@@ -250,32 +250,56 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 	return getCaptions(captions, data, imgWidth, imgHeight);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight){
-	return getPoses(poses, data, imgWidth, imgHeight);
+bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType){
+	return getPoses(poses, data, imgWidth, imgHeight, poseType);
 }
-//------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight){
-	ofJson jpos;
-	ofJson scores;
-	bool bUsingDenseCap = false;
-	if(data.count("poses")){
-		jpos = data["poses"];
-		scores = data["scores"];
-	}
 
-//	std::cout << "imgWidth: " << imgWidth << " imgHeight: " << imgHeight << std::endl;
-	// as long the array sizes match
-	if(jpos.size() == scores.size() && jpos.size() > 0){
-		// for each array element
-		poses.resize(jpos.size());
-		for(size_t i = 0 ; i < poses.size(); i++){
-			poses[i].joints.resize(jpos[i].size());
-			for(size_t j = 0; j < poses[i].joints.size(); j++){
-				poses[i].joints[j] = {(float)jpos[i][j][0] * imgWidth, (float)jpos[i][j][1] * imgHeight};
-			}
-			poses[i].score = scores[i];
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight, ofxRunwayPoseType poseType){
+	if(poseType == OFX_RUNWAY_POSE_NET){
+		ofJson jpos;
+		ofJson scores;
+	
+		if(data.count("poses")){
+			jpos = data["poses"];
+			scores = data["scores"];
 		}
-		return true;
+		
+		//	std::cout << "imgWidth: " << imgWidth << " imgHeight: " << imgHeight << std::endl;
+		// as long the array sizes match
+		if(jpos.size() == scores.size() && jpos.size() > 0){
+			// for each array element
+			poses.resize(jpos.size());
+			for(size_t i = 0 ; i < poses.size(); i++){
+				poses[i].joints.resize(jpos[i].size());
+				for(size_t j = 0; j < poses[i].joints.size(); j++){
+					poses[i].joints[j] = {(float)jpos[i][j][0] * imgWidth, (float)jpos[i][j][1] * imgHeight};
+				}
+				poses[i].score = scores[i];
+			}
+			return true;
+		}
+	}else if(poseType == OFX_RUNWAY_PIF_PAF){
+
+		if(data.count("keypoints")){
+			
+			ofJson keypoints;
+			keypoints = ofJson::parse((string)data["keypoints"]);
+			  
+				poses.resize(keypoints.size());
+		
+				for(size_t i = 0; i < keypoints.size(); i++ ){
+					ofJson pose = keypoints[i];
+					ofJson points = pose["keypoints"];
+					ofJson bbox = pose["bbox"];
+		
+					poses[i].boundingBox.set((float)bbox[0],(float)bbox[1], (float)bbox[2], (float)bbox[3]);
+					for(size_t j = 0; j < points.size(); j+=3){
+						poses[i].joints.push_back({(float)points[i], (float)points[i+1]});
+					}
+				}
+			return true;
+		}
 	}
 	return false;
 }
@@ -333,10 +357,11 @@ void ofxRunwayCaption::draw(){
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayPoseFeatures::setup(const ofJson& info){
 	bool bSuccess = false;
-//	if(info.count("outputs") == 0){
-//		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output\" element");
-//		return  false;
-//	}
+	//	if(info.count("outputs") == 0){
+	//		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output\" element");
+	//		return  false;
+	//	}
+	if(info.size() == 0) return false;
 	if(info[0].count("itemType") == 0){
 		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType\" element");
 		return  false;
@@ -349,7 +374,7 @@ bool ofxRunwayPoseFeatures::setup(const ofJson& info){
 	}
 	
 	size_t numItems = items["length"];
-				
+	
 	if(items.count("labels") == 0){
 		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType/labels\" element");
 		return  false;
@@ -359,7 +384,7 @@ bool ofxRunwayPoseFeatures::setup(const ofJson& info){
 	for(size_t i = 0; i < numItems; i++){
 		indexMap[(string)labels.at(i)] = i;
 	}
-	 
+	
 	
 	if(items.count("connections") == 0){
 		ofLogWarning("ofxRunwayPoseFeatures::setup", "Failed. JSON might be formated incorrectly. no \"output/itemType/connections\" element");
@@ -367,8 +392,8 @@ bool ofxRunwayPoseFeatures::setup(const ofJson& info){
 	}
 	ofJson conn = items["connections"];
 	
-
-//	cout << "ofxRunwayPoseFeatures::setup numItems " << numItems << endl;
+	
+	//	cout << "ofxRunwayPoseFeatures::setup numItems " << numItems << endl;
 	for(auto& c: conn){
 		string j0 = c[0];
 		string j1 = c[1];
@@ -388,6 +413,19 @@ bool ofxRunwayPoseFeatures::setup(const ofJson& info){
 	bIsSetup = bSuccess;
 	return bSuccess;
 }
+//------------------------------------------------------------------------------------------------
+void ofxRunwayPose::draw(){
+	ofPushStyle();
+
+	ofSetColor(ofColor::yellow);
+	for(auto&j: joints){
+		ofDrawCircle(j, 5);
+	}
+	
+	ofPopStyle();
+}
+
+
 //------------------------------------------------------------------------------------------------
 void ofxRunwayPose::draw(const ofxRunwayPoseFeatures & features){
 	ofPushStyle();

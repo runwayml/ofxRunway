@@ -248,10 +248,10 @@ bool ofxRunway::get(vector<ofxRunwayCaption>& captions, float imgWidth, float im
 	return false;
 }
 //----------------------
-bool ofxRunway::get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight){
+bool ofxRunway::get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType){
 	ofxRunwayData dataToReceive;
 	while (tryReceive(dataToReceive)) {
-		return dataToReceive.getPoses(poses, imgWidth, imgHeight);
+		return dataToReceive.getPoses(poses, imgWidth, imgHeight, poseType);
 	}
 	return false;
 }

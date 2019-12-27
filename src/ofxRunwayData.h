@@ -7,12 +7,16 @@
 //
 #pragma once
 #include "ofMain.h"
-
+//-----------------------------------------------------------------------------------------------------------
 enum ofxRunwayImageType{
 	OFX_RUNWAY_JPG,
 	OFX_RUNWAY_PNG
 };
-
+enum ofxRunwayPoseType{
+	OFX_RUNWAY_POSE_NET,
+	OFX_RUNWAY_PIF_PAF
+};
+//-----------------------------------------------------------------------------------------------------------
 // simple structure to hold the captions we get back from runway.
 class ofxRunwayCaption{
 public:
@@ -21,6 +25,8 @@ public:
 	// it is more practical to declare a draw function here rather than accessing the struct elements directly in the loop draw.
 	void draw();
 };
+
+//-----------------------------------------------------------------------------------------------------------
 /// Data structure that holds the info about the names of the body joints and how these are connected
 class ofxRunwayPoseFeatures{
 public:
@@ -33,16 +39,18 @@ public:
 private:
 	bool bIsSetup = false;
 };
-
+//-----------------------------------------------------------------------------------------------------------
 /// Data structure that holds the info that runwayML extracts from human poses using models like PoseNet
 class ofxRunwayPose{
 public:
 	vector<glm::vec2> joints;
 	float score;
+	ofRectangle boundingBox;
 	void draw(const ofxRunwayPoseFeatures & features);
+	void draw();
 	
 };
-
+//-----------------------------------------------------------------------------------------------------------
 class ofxRunwayData {
 public:
 
@@ -78,8 +86,8 @@ public:
 	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	static bool getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight);
 	
-	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight);
-	static bool getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight);
+	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
+	static bool getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	
 
 	

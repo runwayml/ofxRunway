@@ -55,7 +55,7 @@ public:
 	
 	bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
 	
-	bool get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight);
+	bool get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	
 	bool isBusy() {return busy;}
 	
