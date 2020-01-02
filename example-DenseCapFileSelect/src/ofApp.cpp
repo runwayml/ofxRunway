@@ -25,7 +25,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 	if(contentImage.isAllocated()){
-		runway.get(captions,contentImage.getWidth(), contentImage.getHeight());
+		runway.get(captions,contentImage.getWidth(), contentImage.getHeight(),OFX_RUNWAY_DENSE_CAP);
 	}
 }
 //--------------------------------------------------------------

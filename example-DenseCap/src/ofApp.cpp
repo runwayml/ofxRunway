@@ -29,7 +29,7 @@ void ofApp::update(){
 		}
 	}
 
-	runway.get(captions,grabber.getWidth(), grabber.getHeight());
+	runway.get(captions,grabber.getWidth(), grabber.getHeight(),OFX_RUNWAY_DENSE_CAP);
 	
 }
 //--------------------------------------------------------------

@@ -19,7 +19,7 @@ void ofApp::setup(){
 void ofApp::update(){
 	
 	if(bWaitingForResponse){
-		bWaitingForResponse = !runway.get(captions, contentImage.getWidth(), contentImage.getHeight());
+		bWaitingForResponse = !runway.get(captions, contentImage.getWidth(), contentImage.getHeight(),OFX_RUNWAY_COCO);
 	}
 }
 //--------------------------------------------------------------

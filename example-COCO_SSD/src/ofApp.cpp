@@ -22,7 +22,7 @@ void ofApp::update(){
 	if(grabber.isFrameNew() && bSendImage){
 		runway.send("image", grabber, OFX_RUNWAY_JPG);
 	}
-	runway.get(captions, grabber.getWidth(), grabber.getHeight());
+	runway.get(captions, grabber.getWidth(), grabber.getHeight(),OFX_RUNWAY_COCO);
 }
 //--------------------------------------------------------------
 void ofApp::draw(){
