@@ -57,6 +57,8 @@ public:
 	
 	bool get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	
+	bool get(vector<ofRectangle>& rects, float imgWidth, float imgHeight);
+	
 	bool isBusy() {return busy;}
 	
 	

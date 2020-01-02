@@ -151,7 +151,12 @@ bool ofxRunwayData::getData(const string& name, const vector<string>& type_names
 	
 	for(auto& tn: type_names){
 		if (type == tn){
+			if(bIsVector && data[name].size() == 0){
+				ofLogVerbose("ofxRunwayData::getData") << "data found but is empty";
+				return false;
+			}
 			T t = data[name];
+			
 			i = t;
 			return true;
 		}
@@ -161,6 +166,7 @@ bool ofxRunwayData::getData(const string& name, const vector<string>& type_names
 		ss << "There is no data with types \"" << tn << ", ";
 	}
 	ofLogError("ofxRunwayData::getData") << ss.str() << "\" and name \"" << name << "\"";
+//	cout << data.dump(2) << endl;
 	return false;
 }
 //------------------------------------------------------------------------------------------------
@@ -205,6 +211,21 @@ bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
 	return getDataArray(name, {"array"}, v);
+}
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getFaceRects(vector<ofRectangle>& rects, float imgWidth, float imgHeight){
+	vector<vector<float> > vv;
+	if(getFloatVectors("results",vv)){
+		rects.clear();
+		for(auto& v: vv){
+			if(v.size() != 4 ){
+				ofLogWarning("ofxRunwayData::getFaceRects") << "results is not four: not adding to rectangles";
+				continue;
+			}
+		
+			rects.push_back(ofRectangle({v[0] * imgWidth, v[1] * imgHeight}, {v[2] * imgWidth, v[3] * imgHeight}));
+		}
+	}
 }
 
 //------------------------------------------------------------------------------------------------

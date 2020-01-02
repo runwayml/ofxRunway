@@ -89,8 +89,10 @@ public:
 	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	static bool getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	
-
+	bool getFaceRects(vector<ofRectangle>& rects, float imgWidth, float imgHeight);
 	
+	
+
 	struct colorComp {
 		bool operator()(const ofColor& a, const ofColor& b) const {
 			return a.getHex() < b.getHex();
