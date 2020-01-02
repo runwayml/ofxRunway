@@ -49,7 +49,7 @@ public:
 	ofImage contentImage;
 	ofImage referenceImage;
 	
-	vector<ofRectangle> faceRects;
+	vector<ofxRunwayCaption> faces;
 	
 	
 	// Callback functions that process what Runway sends back

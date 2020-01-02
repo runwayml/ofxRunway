@@ -27,7 +27,7 @@ void ofApp::setup() {
 }
 //--------------------------------------------------------------
 void ofApp::update(){
-	runway.get(faceRects, contentImage.getWidth(), contentImage.getHeight());
+	runway.get(faces, contentImage.getWidth(), contentImage.getHeight(), OFX_RUNWAY_FACE_DETECTION);
 }
 
 //--------------------------------------------------------------
@@ -51,15 +51,12 @@ void ofApp::draw() {
 	
 	drawImg(contentImage, {0,0,600,600});
 	drawImg(referenceImage, {600,0,600,600});
-	
 
-	ofPushStyle();
-	ofNoFill();
-	ofSetColor(ofColor::red);
-	for(auto&r: faceRects){
-		ofDrawRectangle(r);
+	
+	for(auto&f: faces){
+		f.draw();
 	}
-	ofPopStyle();
+	
 	
 	
 	auto r = runway.drawStatus(20, 620, true);
