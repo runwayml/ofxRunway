@@ -53,11 +53,10 @@ public:
 	
 	bool get(const string& name, string& data);
 	
-	bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
+	bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType);
 	
 	bool get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	
-	bool get(vector<ofRectangle>& rects, float imgWidth, float imgHeight);
 	
 	bool isBusy() {return busy;}
 	

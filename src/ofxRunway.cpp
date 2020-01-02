@@ -239,18 +239,10 @@ bool ofxRunway::get(const string& name, ofPixels& pix){
 	return false;
 }
 //----------------------
-bool ofxRunway::get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
+bool ofxRunway::get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType){
 	ofxRunwayData dataToReceive;
 	while (tryReceive(dataToReceive)) {
-		return dataToReceive.getCaptions(captions, imgWidth, imgHeight);
-	}
-	return false;
-}
-//----------------------
-bool ofxRunway::get(vector<ofRectangle>& rects, float imgWidth, float imgHeight){
-	ofxRunwayData dataToReceive;
-	while (tryReceive(dataToReceive)) {
-		return dataToReceive.getFaceRects(rects, imgWidth, imgHeight);
+		return dataToReceive.getCaptions(captions, imgWidth, imgHeight, capType);
 	}
 	return false;
 }

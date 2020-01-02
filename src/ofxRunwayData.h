@@ -16,10 +16,17 @@ enum ofxRunwayPoseType{
 	OFX_RUNWAY_POSE_NET,
 	OFX_RUNWAY_PIF_PAF
 };
+enum ofxRunwayCaptionType{
+	OFX_RUNWAY_COCO,
+	OFX_RUNWAY_DENSE_CAP,
+	OFX_RUNWAY_FACE_DETECTION
+};
 //-----------------------------------------------------------------------------------------------------------
 // simple structure to hold the captions we get back from runway.
 class ofxRunwayCaption{
 public:
+	ofxRunwayCaption(){}
+	ofxRunwayCaption(const ofRectangle& _rect, const string& _label = ""): rect(_rect), label(_label){}
 	ofRectangle rect;
 	string label;
 	// it is more practical to declare a draw function here rather than accessing the struct elements directly in the loop draw.
@@ -83,15 +90,10 @@ public:
 	bool getStrings(const string& name, vector<string>& s);
 	bool getFloatVectors(const string& name, vector<vector<float> >& v);
 	
-	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
-	static bool getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight);
-	
+	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType);
+
 	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
-	static bool getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
-	
-	bool getFaceRects(vector<ofRectangle>& rects, float imgWidth, float imgHeight);
-	
-	
+
 
 	struct colorComp {
 		bool operator()(const ofColor& a, const ofColor& b) const {

@@ -212,71 +212,67 @@ bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
 bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
 	return getDataArray(name, {"array"}, v);
 }
-//------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getFaceRects(vector<ofRectangle>& rects, float imgWidth, float imgHeight){
-	vector<vector<float> > vv;
-	if(getFloatVectors("results",vv)){
-		rects.clear();
-		for(auto& v: vv){
-			if(v.size() != 4 ){
-				ofLogWarning("ofxRunwayData::getFaceRects") << "results is not four: not adding to rectangles";
-				continue;
-			}
-		
-			rects.push_back(ofRectangle({v[0] * imgWidth, v[1] * imgHeight}, {v[2] * imgWidth, v[3] * imgHeight}));
-		}
-	}
-}
 
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, const ofJson& data, float imgWidth, float imgHeight){
+bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType){
 	ofJson boxes;
 	ofJson labels;
 	ofJson scores;
-	bool bUsingDenseCap = false;
-	if(data.count("boxes")){
-		boxes = data["boxes"];// used with COCO
-		labels = data["labels"];
-	}else if(data.count("bboxes")){
-		boxes = data["bboxes"];//used with DenseCap
-		labels = data["classes"];
-		scores = data["scores"];
-		bUsingDenseCap = true;
-	}
-	
-	
-	// as long the array sizes match
-	if(boxes.size() == labels.size() && boxes.size() > 0){
-		// for each array element
-		captions.resize(boxes.size());
-		for(int i = 0 ; i < boxes.size(); i++){
-			
-			captions[i].label = labels[i];
-			if(bUsingDenseCap){
-				captions[i].label += "\nscore: " +ofToString((float)scores[i]);
-			}
-			// extract values from the float array
-			captions[i].rect.x = (float)boxes[i][0] * imgWidth;
-			captions[i].rect.y = (float)boxes[i][1] * imgHeight;
-			captions[i].rect.width = ((float)boxes[i][2] * imgWidth) - captions[i].rect.x;
-			captions[i].rect.height = ((float)boxes[i][3] * imgHeight) - captions[i].rect.y;
-			
+	if(capType == OFX_RUNWAY_COCO){
+		if(data.count("boxes")){
+			boxes = data["boxes"];// used with COCO
+			labels = data["labels"];
 		}
-		return true;
+	}
+	else if(capType == OFX_RUNWAY_DENSE_CAP){
+		if(data.count("bboxes")){
+			boxes = data["bboxes"];//used with DenseCap
+			labels = data["classes"];
+			scores = data["scores"];
+		}
+	}
+	else if(capType == OFX_RUNWAY_FACE_DETECTION){
+		vector<vector<float> > vv;
+		captions.clear();
+		if(getFloatVectors("results",vv)){
+			for(auto& v: vv){
+				if(v.size() != 4 ){
+					ofLogWarning("ofxRunwayData::getFaceRects") << "results is not four: not adding to rectangles";
+					continue;
+				}
+			
+				captions.push_back(ofxRunwayCaption(ofRectangle({v[0] * imgWidth, v[1] * imgHeight}, {v[2] * imgWidth, v[3] * imgHeight})));
+								   
+			}
+			return true;
+		}
+	}
+	if(capType == OFX_RUNWAY_DENSE_CAP || capType == OFX_RUNWAY_COCO){
+		// as long the array sizes match
+		if(boxes.size() == labels.size() && boxes.size() > 0){
+			// for each array element
+			captions.resize(boxes.size());
+			for(int i = 0 ; i < boxes.size(); i++){
+				
+				captions[i].label = labels[i];
+				if(capType == OFX_RUNWAY_DENSE_CAP){
+					captions[i].label += "\nscore: " +ofToString((float)scores[i]);
+				}
+				// extract values from the float array
+				captions[i].rect.x = (float)boxes[i][0] * imgWidth;
+				captions[i].rect.y = (float)boxes[i][1] * imgHeight;
+				captions[i].rect.width = ((float)boxes[i][2] * imgWidth) - captions[i].rect.x;
+				captions[i].rect.height = ((float)boxes[i][3] * imgHeight) - captions[i].rect.y;
+				
+			}
+			return true;
+		}
 	}
 	return false;
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight){
-	return getCaptions(captions, data, imgWidth, imgHeight);
-}
-//------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType){
-	return getPoses(poses, data, imgWidth, imgHeight, poseType);
-}
-
-//------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, const ofJson& data, float imgWidth, float imgHeight, ofxRunwayPoseType poseType){
+	
 	if(poseType == OFX_RUNWAY_POSE_NET){
 		ofJson jpos;
 		ofJson scores;
