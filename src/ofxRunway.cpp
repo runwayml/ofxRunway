@@ -255,6 +255,14 @@ bool ofxRunway::get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeigh
 	return false;
 }
 //----------------------
+bool ofxRunway::get(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight){
+	ofxRunwayData dataToReceive;
+	while (tryReceive(dataToReceive)) {
+		return dataToReceive.getFaceLandmarks(landmarks, imgWidth, imgHeight);
+	}
+	return false;
+}
+//----------------------
 bool ofxRunway::send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type, int resize_width, int resize_height){
 	return send(name, img.getPixels(), type, resize_width, resize_height);
 }

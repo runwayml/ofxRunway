@@ -57,6 +57,16 @@ public:
 	void draw();
 	
 };
+class ofxRunwayFaceLandmarks{
+public:
+	vector<glm::vec3> points;
+	vector<std::string> labels;
+	void buildMeshes();
+	void draw(bool bDrawLabels = false);
+protected:
+	ofMesh lineMesh, pointMesh;
+};
+
 //-----------------------------------------------------------------------------------------------------------
 class ofxRunwayData {
 public:
@@ -94,6 +104,8 @@ public:
 
 	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 
+	bool getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight);
+	
 
 	struct colorComp {
 		bool operator()(const ofColor& a, const ofColor& b) const {

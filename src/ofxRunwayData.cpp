@@ -320,6 +320,32 @@ bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float
 	}
 	return false;
 }
+//------------------------------------------------------------------------------------------------
+bool ofxRunwayData::getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight){
+	ofJson points;
+	ofJson labels;
+	
+	if(data.count("points")){
+		points = data["points"];
+		labels = data["labels"];
+		if(points.size() != labels.size()){
+			ofLogVerbose("ofxRunwayData::getFaceLandmarks") << "different number of points and labels";
+			return false;
+		}
+		landmarks.resize(1);
+		landmarks[0].points.resize(points.size());
+		landmarks[0].labels.resize(points.size());
+		for(size_t i = 0; i < points.size(); i++){
+			landmarks[0].points[i].x = (float)points[i][0] * imgWidth;
+			landmarks[0].points[i].y = (float)points[i][1] * imgHeight;
+			landmarks[0].points[i].z = 0;
+			landmarks[0].labels[i] = (string)labels[i];
+		}
+		landmarks[0].buildMeshes();
+		return true;
+	}
+	return false;
+}
 
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getSegmentationMap(SegmentationMap & segMap, const ofJson& info){
@@ -461,4 +487,38 @@ void ofxRunwayPose::draw(const ofxRunwayPoseFeatures & features){
 	
 	ofPopStyle();
 }
+//------------------------------------------------------------------------------------------------
+void ofxRunwayFaceLandmarks::buildMeshes(){
+	lineMesh.setMode(OF_PRIMITIVE_LINE_STRIP);
+	pointMesh.setMode(OF_PRIMITIVE_POINTS);
+	
+	lineMesh.clear();
+	pointMesh.clear();
+	
+	lineMesh.addVertices(points);
+	pointMesh.addVertices(points);
+	
+}
+//------------------------------------------------------------------------------------------------
+void ofxRunwayFaceLandmarks::draw(bool bDrawLabels){
+	ofPushStyle();
+	ofSetColor(ofColor::red);
+	ofSetLineWidth(3);
+	lineMesh.draw();
+	glPointSize(5);
+	pointMesh.draw();
+	ofPopStyle();
+	if(bDrawLabels){
+		auto n = std::min(points.size(), labels.size());
+		glm::vec3 offset ( 5, 7, 0);
+		for(size_t i = 0; i < n; i ++){
+			ofDrawBitmapString(labels[i], points[i]+ offset);
+		}
+	}
+	
+}
+
+
+
+
 
