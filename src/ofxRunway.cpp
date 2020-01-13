@@ -1,6 +1,7 @@
 #include "ofxRunway.h"
 #include "ofxHTTP.h"
 
+using namespace std;
 
 const ofColor ofxRunway::green1 = {115, 229, 162, 255};
 const ofColor ofxRunway::green2 = { 51, 178, 121, 255};

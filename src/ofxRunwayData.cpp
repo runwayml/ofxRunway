@@ -8,6 +8,9 @@
 
 #include "ofxRunwayData.h"
 #include "ofxIO.h"
+
+using namespace std;
+
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayData::checkSetData(const string& name, const string& callerName){
 	if(data.contains(name)){
