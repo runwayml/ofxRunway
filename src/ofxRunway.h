@@ -24,7 +24,7 @@ class ofxRunwayListener{
 
 public:
 	virtual void runwayInfoEvent(ofJson& info) = 0;
-	virtual void runwayErrorEvent(string& message) = 0;
+    virtual void runwayErrorEvent(std::string& message) = 0;
 };
 
 class ofxRunway:public  ofxIO::Thread {
@@ -37,36 +37,36 @@ public:
 	ofxRunway();
 	virtual ~ofxRunway() {}
 	
-	bool setup(const string& host);
+	bool setup(const std::string& host);
 	bool setup(ofxRunwayListener& listenerClass, const string& host);
 	bool setup(ofxRunwayListener* listenerClass, const string& host);
 
 	void send(ofxRunwayData & data);
 	bool tryReceive(ofxRunwayData & data);
 	
-	bool send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
-	bool send(const string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
-	bool send(const string& name, string& data);
+	bool send(const std::string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
+	bool send(const std::string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
+	bool send(const std::string& name, std::string& data);
 	
-	bool get(const string& name, ofImage& img);
-	bool get(const string& name, ofPixels& pix);
+	bool get(const std::string& name, ofImage& img);
+	bool get(const std::string& name, ofPixels& pix);
 	
-	bool get(const string& name, string& data);
+	bool get(const std::string& name, std::string& data);
 	
-	bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType);
+	bool get(std::vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType);
 	
-	bool get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
+	bool get(std::vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
 	
-	bool get(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight);
+	bool get(std::vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight);
 	
 	
 	bool isBusy() {return busy;}
 	
 	
 	ofxRunwayState getState();
-	string getStateAsString(bool bVerbose = false);
+	std::string getStateAsString(bool bVerbose = false);
 	
-	const string& getHost();
+	const std::string& getHost();
 	
 	
 	/// \brief Draws the current status using ofBitmapFont
@@ -77,8 +77,8 @@ public:
 	ofRectangle drawStatus(int x = 20, int y = 20,  bool bVerbose = false);
 
 	
-	const ofJson& getInputType(const string& name);
-	const ofJson& getOutputType(const string& name);
+	const ofJson& getInputType(const std::string& name);
+	const ofJson& getOutputType(const std::string& name);
 	
 	const ofJson& getInputTypes();
 	const ofJson& getOutputTypes();
@@ -87,7 +87,7 @@ public:
 	
 
 	ofEvent<ofJson> infoEvent;
-	ofEvent<string> errorEvent;
+	ofEvent<std::string> errorEvent;
 	
 	
 	bool isServerAvailable();
@@ -108,8 +108,8 @@ protected:
 	ofJson inputTypes;
 	ofJson outputTypes;
 
-	string host;
-	int    port;
+	std::string host;
+	int         port;
 
 	std::atomic<bool> busy, ioTypesSet;
 	
@@ -128,7 +128,7 @@ private:
 		REQUEST_DATA
 	};
 	
-	void makeRequest(const string& address,  RequestType requestType, const ofJson& requestData = ofJson());
+	void makeRequest(const std::string& address,  RequestType requestType, const ofJson& requestData = ofJson());
 	
 	void requestInfoCallback(const ofJson& info);
 	void requestDataCallback(const ofJson& data);
