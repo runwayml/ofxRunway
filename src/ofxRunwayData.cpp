@@ -301,7 +301,7 @@ bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float
 		if(data.count("keypoints")){
 			
 			ofJson keypoints;
-			keypoints = ofJson::parse((string)data["keypoints"]);
+            keypoints = ofJson::parse(data["keypoints"].get<std::string>());
 			  
 				poses.resize(keypoints.size());
 		
@@ -339,7 +339,7 @@ bool ofxRunwayData::getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, 
 			landmarks[0].points[i].x = (float)points[i][0] * imgWidth;
 			landmarks[0].points[i].y = (float)points[i][1] * imgHeight;
 			landmarks[0].points[i].z = 0;
-			landmarks[0].labels[i] = (string)labels[i];
+			landmarks[0].labels[i] = labels[i].get<std::string>();
 		}
 		landmarks[0].buildMeshes();
 		return true;
@@ -425,7 +425,7 @@ bool ofxRunwayPoseFeatures::setup(const ofJson& info){
 	
 	ofJson labels = items["labels"];
 	for(size_t i = 0; i < numItems; i++){
-		indexMap[(string)labels.at(i)] = i;
+		indexMap[labels.at(i).get<std::string>()] = i;
 	}
 	
 	
