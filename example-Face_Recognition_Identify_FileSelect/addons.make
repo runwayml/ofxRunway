@@ -1,8 +1,8 @@
 ofxGui
-ofxHTTP
+ofxPoco
+ofxSSLManager
 ofxIO
 ofxMediaType
 ofxNetworkUtils
-ofxPoco
+ofxHTTP
 ofxRunway
-ofxSSLManager
