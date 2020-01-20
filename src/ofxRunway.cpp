@@ -121,8 +121,8 @@ bool ofxRunway::getTypesLookup() {
 }
 
 //----------------------
-void ofxRunway::send(ofxRunwayData & data){
-	input.send(data);
+bool ofxRunway::send(ofxRunwayData & data){
+	return input.send(data);
 }
 
 //----------------------
@@ -273,8 +273,8 @@ bool ofxRunway::send(const string& name, const ofPixels& pix, ofxRunwayImageType
 	ofxRunwayData data;
 	data.setImage(name, pix, type, resize_width, resize_height);
 	
-	send(data);
-	return true;
+	return send(data);
+	
 }
 //----------------------
 bool ofxRunway::send(const string& name, string& data){
@@ -283,8 +283,7 @@ bool ofxRunway::send(const string& name, string& data){
 	ofxRunwayData runWayData;
 	runWayData.setString(name, data);
 	
-	send(runWayData);
-	return true;
+	return send(runWayData);
 
 }
 //----------------------

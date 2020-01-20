@@ -41,12 +41,13 @@ public:
 	bool setup(ofxRunwayListener& listenerClass, const string& host);
 	bool setup(ofxRunwayListener* listenerClass, const string& host);
 
-	void send(ofxRunwayData & data);
-	bool tryReceive(ofxRunwayData & data);
-	
+	bool send(ofxRunwayData & data);
 	bool send(const string& name, const ofBaseHasPixels& img, ofxRunwayImageType type =OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
 	bool send(const string& name, const ofPixels& pix, ofxRunwayImageType type = OFX_RUNWAY_JPG, int resize_width = 0, int resize_height = 0);
 	bool send(const string& name, string& data);
+	
+	
+	bool tryReceive(ofxRunwayData & data);
 	
 	bool get(const string& name, ofImage& img);
 	bool get(const string& name, ofPixels& pix);
