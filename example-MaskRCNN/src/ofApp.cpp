@@ -43,15 +43,8 @@ void ofApp::draw(){
 	
 	if(mask.isAllocated()){mask.draw(0, 480);}
 	
+	runway.drawStatus(660, 520, true);
 	
-	// display status
-	
-	stringstream ss;
-	
-	
-	
-	ofRectangle r = runway.drawStatus(660, 520, true);
-	ofDrawBitmapString(ss.str(), r.getBottomLeft() + glm::vec3(0, 20, 0));
 	
 }
 // Runway sends information about the current model
