@@ -20,6 +20,13 @@ enum ofxRunwayState{
 	OFX_RUNWAY_CONNECTION_REFUSED
 };
 
+enum ofxRunwayRequestType{
+	OFX_RUNWAY_REQUEST_GET,
+	OFX_RUNWAY_REQUEST_POST,
+	OFX_RUNWAY_REQUEST_DELETE
+};
+
+
 class ofxRunwayListener{
 
 public:
@@ -35,7 +42,7 @@ public:
 	static const ofColor gray;
 	
 	ofxRunway();
-	virtual ~ofxRunway() {}
+	virtual ~ofxRunway(){}
 	
 	bool setup(const string& host);
 	bool setup(ofxRunwayListener& listenerClass, const string& host);
@@ -89,12 +96,17 @@ public:
 
 	ofEvent<ofJson> infoEvent;
 	ofEvent<string> errorEvent;
-	
+
 	
 	bool isServerAvailable();
 	
+	void setInfoJson(const ofJson& info);
+	
+	void setDataSuffixURL(const string& sufix);
 protected:
 
+	string dataSuffix = "query";
+//	string infoSuffix = "info";
 	
 	bool getTypesLookup();
 	void updateThread();
@@ -112,28 +124,39 @@ protected:
 	string host;
 	int    port;
 
-	std::atomic<bool> busy, ioTypesSet;
+	std::atomic<bool> busy;
+	
+	enum ofxRunwayTypeStatus{
+		OFX_RUNWAY_TYPE_NOT_SET = 0,
+		OFX_RUNWAY_TYPE_WAITING,
+		OFX_RUNWAY_TYPE_SET
+	};
+	
+	
+	std::atomic<ofxRunwayTypeStatus> ioTypesSet;
 	
 	ofJson infoJson;
-
+	
 	std::atomic<ofxRunwayState> state;
 
 	ofEventListeners listeners;
 	
 	
 	std::string errorString;
-	
+
 private:
-	enum RequestType{
-		REQUEST_INFO,
-		REQUEST_DATA
+	enum CallbackType {
+		CALLBACK_INFO,
+		CALLBACK_DATA
 	};
 	
-	void makeRequest(const string& address,  RequestType requestType, const ofJson& requestData = ofJson());
+	void makeRequest(const string& address,  CallbackType callbackType, const string & funcName, const ofJson& requestData = ofJson());
+	void makeRequest(const string& address,  std::function<void (const ofJson& data)> callback , const ofJson& requestData, ofxRunwayRequestType requestType, const string & funcName );
 	
 	void requestInfoCallback(const ofJson& info);
 	void requestDataCallback(const ofJson& data);
-	
+
+	void notifyError(const string & funcName, const string& errorMsg);
 };
 
 

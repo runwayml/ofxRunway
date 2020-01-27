@@ -10,10 +10,8 @@ const ofColor ofxRunway::gray   = { 28,  28,  28, 255};
 ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {
 	busy = true;
 	state = OFX_RUNWAY_DISCONNECTED;
-	ioTypesSet = false;
-	
+	ioTypesSet = OFX_RUNWAY_TYPE_NOT_SET;
 }
-
 //----------------------
 bool ofxRunway::setup(const string& host) {
 	ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
@@ -45,7 +43,7 @@ void ofxRunway::requestInfoCallback(const ofJson& info){
 	inputTypes = infoJson["inputs"];
 	outputTypes = infoJson["outputs"];
 	
-	ioTypesSet = true;
+	ioTypesSet = OFX_RUNWAY_TYPE_SET;
 	state = OFX_RUNWAY_CONNECTED;
 	ofNotifyEvent(infoEvent, infoJson, this);
 }
@@ -60,64 +58,78 @@ void ofxRunway::requestDataCallback(const ofJson& data){
 	output.send(dataToSend);
 }
 //----------------------
-void ofxRunway::makeRequest(const string& address,  RequestType requestType,const ofJson& requestData){
+void ofxRunway::notifyError(const string & funcName, const string& errorMsg){
+	if(ioTypesSet == OFX_RUNWAY_TYPE_WAITING){
+		ioTypesSet = OFX_RUNWAY_TYPE_NOT_SET;
+	}
+	cout << "ofxRunway::notifyError " << funcName << " - " << errorMsg << endl;
+	errorString = funcName + " -> " + errorMsg;
+	ofNotifyEvent(errorEvent, errorString, this);
+	ofLogError("ofxRunway::"+funcName) << errorString;
+}
+//----------------------
+void ofxRunway::makeRequest(const string& address,  std::function<void (const ofJson& data)> callback , const ofJson& requestData, ofxRunwayRequestType requestType, const string & funcName ){
 	ofxHTTP::Client client;
 	std::unique_ptr<ofxHTTP::Request> request;
 	ofxHTTP::Context context;
 	
-	if(requestType == REQUEST_INFO){
+	if(requestType == OFX_RUNWAY_REQUEST_GET){
 		request = make_unique<ofxHTTP::GetRequest>(address);
-	}else{
+	}else if(requestType == OFX_RUNWAY_REQUEST_POST){
 		request = make_unique<ofxHTTP::JSONRequest>(address, requestData, Poco::Net::HTTPMessage::HTTP_1_1);
+	}else if(requestType == OFX_RUNWAY_REQUEST_DELETE){
+		request = make_unique<ofxHTTP::FormRequest>(Poco::Net::HTTPRequest::HTTP_DELETE, address, Poco::Net::HTTPMessage::HTTP_1_1);
 	}
-	string funcName = (string)((requestType == REQUEST_INFO)?"request info": "request data");
-	
+	request->setContentType("application/json");
+	request->add("Accept","application/json");
+	request->set("Accept-Encoding","");
 	try
 	{
+		
 		auto response = client.execute(context, *request);
 		if (response->getStatus() == Poco::Net::HTTPResponse::HTTP_OK)
 		{
-			if(requestType == REQUEST_INFO){
-				requestInfoCallback(response->json());
-			}else if(requestType == REQUEST_DATA){
-				requestDataCallback(response->json());
+			if(requestType == OFX_RUNWAY_REQUEST_DELETE){
+				if(response->json().count("removed") && response->json()["removed"].get<bool>()){
+						callback(requestData);
+				}
+			}else{
+				callback(response->json());
 			}
 		}
 		else
 		{
 			state = OFX_RUNWAY_CONNECTION_REFUSED;
-			errorString =  response->statusAndReason();
-			errorString = funcName + " -> " + errorString;
-			ofNotifyEvent(errorEvent, errorString, this);
-			ofLogError("@@@ ofxRunway::"+funcName) << errorString;
+			notifyError(funcName , "Http Response Error : " + response->statusAndReason());
 		}
 	}
 	catch (const Poco::Exception& exc)
 	{
 		state = OFX_RUNWAY_CONNECTION_REFUSED;
-		errorString =  exc.displayText();
-		errorString = funcName + " -> " + errorString;
-		ofNotifyEvent(errorEvent, errorString, this);
-		ofLogError("### ofxRunway::"+funcName) << errorString;
+		notifyError(funcName, "Poco:exception : " + exc.displayText());
 	}
 	catch (const std::exception& exc)
 	{
 		state = OFX_RUNWAY_CONNECTION_REFUSED;
-		errorString = exc.what();
-		errorString = funcName + " -> " + errorString;
-		ofNotifyEvent(errorEvent, errorString, this);
-		ofLogError("!!! ofxRunway::"+funcName) << errorString;
+		notifyError(funcName, "std:exception : " + (string)exc.what());
 	}
-
+}
+void ofxRunway::makeRequest(const string& address,  CallbackType callbackType, const string & funcName,const ofJson& requestData){
+	if(callbackType == CALLBACK_INFO){
+		makeRequest(address, std::bind(&ofxRunway::requestInfoCallback, this, std::placeholders::_1), requestData, OFX_RUNWAY_REQUEST_GET, funcName);
+	}else if(callbackType == CALLBACK_DATA){
+		makeRequest(address, std::bind(&ofxRunway::requestDataCallback, this, std::placeholders::_1), requestData, OFX_RUNWAY_REQUEST_POST, funcName);
+	}
 }
 //----------------------
 bool ofxRunway::getTypesLookup() {
-	if(ioTypesSet){
+	if(ioTypesSet == OFX_RUNWAY_TYPE_SET){
 		return true;
 	}
-	makeRequest(host+"/info", REQUEST_INFO);
+	ioTypesSet == OFX_RUNWAY_TYPE_WAITING;
+	makeRequest(host+"/info", CALLBACK_INFO, "getInfo");
 
-	return ioTypesSet;
+	return ioTypesSet == OFX_RUNWAY_TYPE_SET;
 }
 
 //----------------------
@@ -132,18 +144,19 @@ bool ofxRunway::tryReceive(ofxRunwayData & data){
 //----------------------
 void ofxRunway::updateThread()
 {
-	while (isRunning() && input.receive(dataToReceive))
-	{
-		if (input.size() > 1)
-			continue;
+	while (isRunning()){
+		if(ioTypesSet == OFX_RUNWAY_TYPE_NOT_SET)
+			getTypesLookup();
+		if(input.receive(dataToReceive)){
+			if (input.size() > 1)
+				continue;
 		
-		busy = true;
-		
-		if(!ioTypesSet) getTypesLookup();
-		
-		makeRequest(host+"/query",REQUEST_DATA, dataToReceive.data);
+			busy = true;
+			
+			makeRequest(host+"/"+dataSuffix,CALLBACK_DATA, "query", dataToReceive.data);
 
-		busy = false;
+			busy = false;
+		}
 	}
 }
 //----------------------
@@ -171,6 +184,14 @@ ofRectangle ofxRunway::drawStatus(int x , int y, bool bVerbose ){
 //----------------------
 string ofxRunway::getStateAsString(bool bVerbose){
 	stringstream ss;
+	
+	if (ioTypesSet == OFX_RUNWAY_TYPE_NOT_SET){
+		ss <<"OFX_RUNWAY_TYPE_NOT_SET" <<endl;
+	}else if (ioTypesSet == OFX_RUNWAY_TYPE_WAITING){
+		ss <<"OFX_RUNWAY_TYPE_WAITING" << endl;
+	}else if (ioTypesSet == OFX_RUNWAY_TYPE_SET){
+		ss <<"OFX_RUNWAY_TYPE_SET" << endl;
+	}
 	auto st = getState();
 	if(st == OFX_RUNWAY_DISCONNECTED){
 		ss << "ofxRunway : host "<< host << " DISCONNECTED";
@@ -300,8 +321,11 @@ bool ofxRunway::isServerAvailable(){
 	return (state != OFX_RUNWAY_DISCONNECTED && state != OFX_RUNWAY_CONNECTION_REFUSED);
 	
 }
-
-
-
-
-
+//----------------------
+void ofxRunway::setInfoJson(const ofJson& info){
+	requestInfoCallback(info);
+}
+//----------------------
+void ofxRunway::setDataSuffixURL(const string& sufix){
+	dataSuffix = sufix;
+}

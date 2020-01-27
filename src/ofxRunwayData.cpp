@@ -187,7 +187,6 @@ bool ofxRunwayData::getDataArray(const string& name, const vector<string>& type_
 bool ofxRunwayData::getBoolean(const string& name, bool& b){
 	return getData(name, {"boolean", "bool"}, b);
 }
-
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getInt(const string& name, int& i){
 	return getData(name, {"int"}, i);
@@ -212,7 +211,6 @@ bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
 bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
 	return getDataArray(name, {"array"}, v);
 }
-
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType){
 	ofJson boxes;
@@ -517,8 +515,5 @@ void ofxRunwayFaceLandmarks::draw(bool bDrawLabels){
 	}
 	
 }
-
-
-
 
 
