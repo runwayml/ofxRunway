@@ -62,8 +62,7 @@ void ofxRunway::notifyError(const string & funcName, const string& errorMsg){
 	if(ioTypesSet == OFX_RUNWAY_TYPE_WAITING){
 		ioTypesSet = OFX_RUNWAY_TYPE_NOT_SET;
 	}
-	cout << "ofxRunway::notifyError " << funcName << " - " << errorMsg << endl;
-	errorString = funcName + " -> " + errorMsg;
+	errorString = host +"/"+dataSuffix+ " : " + funcName + " -> " + errorMsg;
 	ofNotifyEvent(errorEvent, errorString, this);
 	ofLogError("ofxRunway::"+funcName) << errorString;
 }
