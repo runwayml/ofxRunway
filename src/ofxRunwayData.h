@@ -90,21 +90,21 @@ public:
 	
 	
 
-	bool getImage(const string& name,ofBaseHasPixels& pixels);
-	bool getImage(const string& name, ofPixels& pixels);
-	bool getBoolean(const string& name, bool &b);
-	bool getInt(const string& name, int& i);
-	bool getFloat(const string& name, float& f);
-	bool getString(const string& name, string& s);
-	bool getFloats(const string& name, vector<float>& f);
-	bool getStrings(const string& name, vector<string>& s);
-	bool getFloatVectors(const string& name, vector<vector<float> >& v);
+	bool getImage(const string& name,ofBaseHasPixels& pixels)const;
+	bool getImage(const string& name, ofPixels& pixels)const;
+	bool getBoolean(const string& name, bool &b)const;
+	bool getInt(const string& name, int& i)const;
+	bool getFloat(const string& name, float& f)const;
+	bool getString(const string& name, string& s)const;
+	bool getFloats(const string& name, vector<float>& f)const;
+	bool getStrings(const string& name, vector<string>& s)const;
+	bool getFloatVectors(const string& name, vector<vector<float> >& v)const;
 	
-	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType);
+	bool getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType)const;
 
-	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
+	bool getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType)const;
 
-	bool getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight);
+	bool getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight)const;
 	
 
 	struct colorComp {
@@ -121,9 +121,9 @@ public:
 	ofJson data;
 	
 protected:
-	bool checkSetData(const string& name, const string& callerName);
+	bool checkSetData(const string& name, const string& callerName)const;
 	template<typename T>
-	bool getData(const string& name, const vector<string>& type_names, T& i, bool bIsVector = false);
+	bool getData(const string& name, const vector<string>& type_names, T& i, bool bIsVector = false)const;
 	template<typename T>
-	bool getDataArray(const string& name, const vector<string>& type_names, vector<T>& v);
+	bool getDataArray(const string& name, const vector<string>& type_names, vector<T>& v)const;
 };

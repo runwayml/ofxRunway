@@ -9,7 +9,7 @@
 #include "ofxRunwayData.h"
 #include "ofxIO.h"
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::checkSetData(const string& name, const string& callerName){
+bool ofxRunwayData::checkSetData(const string& name, const string& callerName)const{
 	if(data.contains(name)){
 		ofLogWarning("ofxRunwayData::"+callerName) << "there is already data with name \"" << name << "\". It will be overwritten";
 		return false;
@@ -106,17 +106,16 @@ void ofxRunwayData::setFloatVectors(const string& name,const vector<vector<float
 }
 
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getImage(const string& name,
-							 ofBaseHasPixels& pixels
-							 ){
+bool ofxRunwayData::getImage(const string& name, ofBaseHasPixels& pixels)const{
 	return getImage(name, pixels.getPixels());
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getImage(const string& name,
-							 ofPixels& pixels
-							 ){
+bool ofxRunwayData::getImage(const string& name, ofPixels& pixels)const{
 	if(!data.contains(name)){
-		ofLogError("ofxRunwayData::getData") << "there is no image data with name \"" << name << "\".";
+		ofLogWarning("ofxRunwayData::getData") << "there is no image data with name \"" << name << "\".";
+//		for (auto& d : data.items()){
+//				cout << d.key() << '\n';
+//			}
 		return false;
 	}
 	
@@ -139,9 +138,9 @@ bool ofxRunwayData::getImage(const string& name,
 }
 //------------------------------------------------------------------------------------------------
 template<typename T>
-bool ofxRunwayData::getData(const string& name, const vector<string>& type_names, T& i, bool bIsVector){
+bool ofxRunwayData::getData(const string& name, const vector<string>& type_names, T& i, bool bIsVector)const{
 	if(!data.contains(name)){
-		ofLogError("ofxRunwayData::getData") << "there is no data with name \"" << name << "\".";
+		ofLogWarning("ofxRunwayData::getData") << "there is no data with name \"" << name << "\".";
 		return false;
 	}
 	string type = data[name].type_name();
@@ -171,7 +170,7 @@ bool ofxRunwayData::getData(const string& name, const vector<string>& type_names
 }
 //------------------------------------------------------------------------------------------------
 template<typename T>
-bool ofxRunwayData::getDataArray(const string& name, const vector<string>& type_names, vector<T>& v){
+bool ofxRunwayData::getDataArray(const string& name, const vector<string>& type_names, vector<T>& v)const{
 	if(!data.contains(name)){
 		ofLogError("ofxRunwayData::getDataArray") << "there is no data with name \"" << name << "\".";
 		return false;
@@ -184,35 +183,35 @@ bool ofxRunwayData::getDataArray(const string& name, const vector<string>& type_
 	return getData(name, type_names, v, true);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getBoolean(const string& name, bool& b){
+bool ofxRunwayData::getBoolean(const string& name, bool& b)const{
 	return getData(name, {"boolean", "bool"}, b);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getInt(const string& name, int& i){
+bool ofxRunwayData::getInt(const string& name, int& i)const{
 	return getData(name, {"int"}, i);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getFloat(const string& name, float& f){
+bool ofxRunwayData::getFloat(const string& name, float& f)const{
 	return getData(name, {"float"}, f);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getString(const string& name, string& s){
+bool ofxRunwayData::getString(const string& name, string& s)const{
 	return getData(name, {"string","text"}, s);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getFloats(const string& name, vector<float>& f){
+bool ofxRunwayData::getFloats(const string& name, vector<float>& f)const{
 	return getDataArray(name, {"float"}, f);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getStrings(const string& name, vector<string>& s){
+bool ofxRunwayData::getStrings(const string& name, vector<string>& s)const{
 	return getDataArray(name, {"string","text"}, s);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v){
+bool ofxRunwayData::getFloatVectors(const string& name, vector<vector<float> >& v)const{
 	return getDataArray(name, {"array"}, v);
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType){
+bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight, ofxRunwayCaptionType capType)const{
 	ofJson boxes;
 	ofJson labels;
 	ofJson scores;
@@ -269,7 +268,7 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 	return false;
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType){
+bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType)const{
 	
 	if(poseType == OFX_RUNWAY_POSE_NET){
 		ofJson jpos;
@@ -319,7 +318,7 @@ bool ofxRunwayData::getPoses(vector<ofxRunwayPose>& poses, float imgWidth, float
 	return false;
 }
 //------------------------------------------------------------------------------------------------
-bool ofxRunwayData::getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight){
+bool ofxRunwayData::getFaceLandmarks(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight)const{
 	ofJson points;
 	ofJson labels;
 	
