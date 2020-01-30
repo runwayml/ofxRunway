@@ -7,7 +7,7 @@ const ofColor ofxRunway::green2 = { 51, 178, 121, 255};
 const ofColor ofxRunway::gray   = { 28,  28,  28, 255};
 
 //----------------------
-ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {
+ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this), "ofxRunway") {
 	busy = true;
 	state = OFX_RUNWAY_DISCONNECTED;
 	ioTypesSet = OFX_RUNWAY_TYPE_NOT_SET;
@@ -144,11 +144,12 @@ bool ofxRunway::tryReceive(ofxRunwayData & data){
 void ofxRunway::updateThread()
 {
 	while (isRunning()){
-		if(ioTypesSet == OFX_RUNWAY_TYPE_NOT_SET)
+		if(ioTypesSet == OFX_RUNWAY_TYPE_NOT_SET){
 			getTypesLookup();
+		}
 		if(input.receive(dataToReceive)){
-			if (input.size() > 1)
-				continue;
+//			if (input.size() > 1)
+//				continue;
 		
 			busy = true;
 			
@@ -159,36 +160,38 @@ void ofxRunway::updateThread()
 	}
 }
 //----------------------
-ofxRunwayState ofxRunway::getState(){
+ofxRunwayState ofxRunway::getState() const{
 	return state;
 }
 //----------------------
-const string& ofxRunway::getHost(){
+const string& ofxRunway::getHost() const{
 	return host;
 }
 //----------------------
-ofRectangle ofxRunway::drawStatus(int x , int y, bool bVerbose ){
+ofRectangle ofxRunway::drawStatus(int x , int y, bool bVerbose ) const{
 	
 	
-	ofColor backgroundColor = ofColor::black;
-	if(getState() == OFX_RUNWAY_CONNECTION_REFUSED){
-		backgroundColor = ofColor(255, 0, 0, ofMap(sin(ofGetElapsedTimef()*3), -1, 1, 100, 255));
-	}
-	auto s = getStateAsString(bVerbose);
-	ofDrawBitmapStringHighlight(s, x, y, backgroundColor);
-	ofBitmapFont bf;
-	return bf.getBoundingBox(s, x, y);
+//	ofColor backgroundColor = ofColor::black;
+//	if(getState() == OFX_RUNWAY_CONNECTION_REFUSED){
+//		backgroundColor = ofColor(255, 0, 0, ofMap(sin(ofGetElapsedTimef()*3), -1, 1, 100, 255));
+//	}
+//	auto s = getStateAsString(bVerbose);
+//	ofDrawBitmapStringHighlight(s, x, y, backgroundColor);
+//	ofBitmapFont bf;
+//	return bf.getBoundingBox(s, x, y);
+	return ofRectangle(x,y, 0,0);
 	
 }
 //----------------------
-string ofxRunway::getStateAsString(bool bVerbose){
+string ofxRunway::getStateAsString(bool bVerbose) const{
 	stringstream ss;
 	
-	if (ioTypesSet == OFX_RUNWAY_TYPE_NOT_SET){
+	ofxRunwayTypeStatus ioSet = ioTypesSet;
+	if (ioSet == OFX_RUNWAY_TYPE_NOT_SET){
 		ss <<"OFX_RUNWAY_TYPE_NOT_SET" <<endl;
-	}else if (ioTypesSet == OFX_RUNWAY_TYPE_WAITING){
+	}else if (ioSet == OFX_RUNWAY_TYPE_WAITING){
 		ss <<"OFX_RUNWAY_TYPE_WAITING" << endl;
-	}else if (ioTypesSet == OFX_RUNWAY_TYPE_SET){
+	}else if (ioSet == OFX_RUNWAY_TYPE_SET){
 		ss <<"OFX_RUNWAY_TYPE_SET" << endl;
 	}
 	auto st = getState();
@@ -217,15 +220,15 @@ string ofxRunway::getStateAsString(bool bVerbose){
 	return ss.str();
 }
 //----------------------
-const ofJson& ofxRunway::getInputTypes(){
+const ofJson& ofxRunway::getInputTypes() const{
 	return inputTypes;
 }
 //----------------------
-const ofJson& ofxRunway::getOutputTypes(){
+const ofJson& ofxRunway::getOutputTypes() const{
 	return outputTypes;
 }
 //----------------------
-const ofJson& getType(const string& name, const ofJson& types){
+const ofJson& getType(const string& name, const ofJson& types) {
 	if(types.count(name)){
 		return types[name];
 	}
@@ -233,11 +236,11 @@ const ofJson& getType(const string& name, const ofJson& types){
 	return dummyInfo;
 }
 //----------------------
-const ofJson& ofxRunway::getInputType(const string& name){
+const ofJson& ofxRunway::getInputType(const string& name) const{
 	return getType(name, inputTypes);
 }
 //----------------------
-const ofJson& ofxRunway::getOutputType(const string& name){
+const ofJson& ofxRunway::getOutputType(const string& name) const{
 	return getType(name, outputTypes);
 }
 //----------------------
@@ -316,9 +319,12 @@ bool ofxRunway::get(const string& name, string& data){
 }
 
 //----------------------
-bool ofxRunway::isServerAvailable(){
+bool ofxRunway::isServerAvailable() const{
 	return (state != OFX_RUNWAY_DISCONNECTED && state != OFX_RUNWAY_CONNECTION_REFUSED);
-	
+}
+//----------------------
+bool ofxRunway::isBusy() const{
+	return busy;
 }
 //----------------------
 void ofxRunway::setInfoJson(const ofJson& info){

@@ -68,13 +68,13 @@ public:
 	bool get(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight);
 	
 	
-	bool isBusy() {return busy;}
+	bool isBusy() const; 
 	
 	
-	ofxRunwayState getState();
-	string getStateAsString(bool bVerbose = false);
+	ofxRunwayState getState() const;
+	string getStateAsString(bool bVerbose = false) const;
 	
-	const string& getHost();
+	const string& getHost() const;
 	
 	
 	/// \brief Draws the current status using ofBitmapFont
@@ -82,14 +82,14 @@ public:
 	/// \param y y-axiscoordinate where to draw the text
 	/// \param bVerbose if true draw the verbose (full text) for the current state.
 	/// \return  the bounding box of the text drawn.
-	ofRectangle drawStatus(int x = 20, int y = 20,  bool bVerbose = false);
+	ofRectangle drawStatus(int x = 20, int y = 20,  bool bVerbose = false) const;
 
 	
-	const ofJson& getInputType(const string& name);
-	const ofJson& getOutputType(const string& name);
+	const ofJson& getInputType(const string& name) const;
+	const ofJson& getOutputType(const string& name) const;
 	
-	const ofJson& getInputTypes();
-	const ofJson& getOutputTypes();
+	const ofJson& getInputTypes() const;
+	const ofJson& getOutputTypes() const;
 	
 //	const static string OFX_RUNWAY_VERSION = "0.2";
 	
@@ -98,7 +98,7 @@ public:
 	ofEvent<string> errorEvent;
 
 	
-	bool isServerAvailable();
+	bool isServerAvailable() const;
 	
 	void setInfoJson(const ofJson& info);
 	
