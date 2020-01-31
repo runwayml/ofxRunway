@@ -18,7 +18,6 @@ ofxRunway::~ofxRunway(){
 }
 //----------------------
 void ofxRunway::closeChannels(){
-	cout << "ofxRunway::closeChannels()" << endl;
 	input.close();
 	output.close();
 }
