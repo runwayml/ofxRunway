@@ -7,14 +7,32 @@ const ofColor ofxRunway::green2 = { 51, 178, 121, 255};
 const ofColor ofxRunway::gray   = { 28,  28,  28, 255};
 
 //----------------------
-ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this), "ofxRunway") {
+ofxRunway::ofxRunway() : ofxIO::Thread(std::bind(&ofxRunway::updateThread, this)) {
+	exitListener = ofEvents().exit.newListener(this, &ofxRunway::exitCB);
 	busy = true;
 	state = OFX_RUNWAY_DISCONNECTED;
 	ioTypesSet = OFX_RUNWAY_TYPE_NOT_SET;
 }
+ofxRunway::~ofxRunway(){
+	closeChannels();
+}
+//----------------------
+void ofxRunway::closeChannels(){
+	cout << "ofxRunway::closeChannels()" << endl;
+	input.close();
+	output.close();
+}
+//----------------------
+void ofxRunway::onExit(){
+	closeChannels();
+}
+//----------------------
+void ofxRunway::exitCB(ofEventArgs&){
+	closeChannels();
+}
 //----------------------
 bool ofxRunway::setup(const string& host) {
-	ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
+//	ofLog::setChannel(std::make_shared<ofxIO::ThreadsafeConsoleLoggerChannel>());
 	this->host = host;
 	busy = false;
 	
@@ -150,9 +168,8 @@ void ofxRunway::updateThread()
 		if(input.receive(dataToReceive)){
 //			if (input.size() > 1)
 //				continue;
-		
 			busy = true;
-			
+
 			makeRequest(host+"/"+dataSuffix,CALLBACK_DATA, "query", dataToReceive.data);
 
 			busy = false;
@@ -171,14 +188,14 @@ const string& ofxRunway::getHost() const{
 ofRectangle ofxRunway::drawStatus(int x , int y, bool bVerbose ) const{
 	
 	
-//	ofColor backgroundColor = ofColor::black;
-//	if(getState() == OFX_RUNWAY_CONNECTION_REFUSED){
-//		backgroundColor = ofColor(255, 0, 0, ofMap(sin(ofGetElapsedTimef()*3), -1, 1, 100, 255));
-//	}
-//	auto s = getStateAsString(bVerbose);
-//	ofDrawBitmapStringHighlight(s, x, y, backgroundColor);
-//	ofBitmapFont bf;
-//	return bf.getBoundingBox(s, x, y);
+	ofColor backgroundColor = ofColor::black;
+	if(getState() == OFX_RUNWAY_CONNECTION_REFUSED){
+		backgroundColor = ofColor(255, 0, 0, ofMap(sin(ofGetElapsedTimef()*3), -1, 1, 100, 255));
+	}
+	auto s = getStateAsString(bVerbose);
+	ofDrawBitmapStringHighlight(s, x, y, backgroundColor);
+	
+	return bf.getBoundingBox(s, x, y);
 	return ofRectangle(x,y, 0,0);
 	
 }

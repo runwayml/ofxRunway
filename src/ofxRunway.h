@@ -20,12 +20,6 @@ enum ofxRunwayState{
 	OFX_RUNWAY_CONNECTION_REFUSED
 };
 
-enum ofxRunwayRequestType{
-	OFX_RUNWAY_REQUEST_GET,
-	OFX_RUNWAY_REQUEST_POST,
-	OFX_RUNWAY_REQUEST_DELETE
-};
-
 
 class ofxRunwayListener{
 
@@ -42,7 +36,7 @@ public:
 	static const ofColor gray;
 	
 	ofxRunway();
-	virtual ~ofxRunway(){}
+	virtual ~ofxRunway();
 	
 	bool setup(const string& host);
 	bool setup(ofxRunwayListener& listenerClass, const string& host);
@@ -144,11 +138,26 @@ protected:
 	
 	std::string errorString;
 
+	virtual void onExit() override;
+	
+	void closeChannels();
 private:
+	void exitCB(ofEventArgs&);
+	
+	ofEventListener exitListener;
+	
 	enum CallbackType {
 		CALLBACK_INFO,
 		CALLBACK_DATA
 	};
+	
+	enum ofxRunwayRequestType{
+		OFX_RUNWAY_REQUEST_GET,
+		OFX_RUNWAY_REQUEST_POST,
+		OFX_RUNWAY_REQUEST_DELETE
+	};
+
+
 	
 	void makeRequest(const string& address,  CallbackType callbackType, const string & funcName, const ofJson& requestData = ofJson());
 	void makeRequest(const string& address,  std::function<void (const ofJson& data)> callback , const ofJson& requestData, ofxRunwayRequestType requestType, const string & funcName );
@@ -157,6 +166,7 @@ private:
 	void requestDataCallback(const ofJson& data);
 
 	void notifyError(const string & funcName, const string& errorMsg);
+	ofBitmapFont bf;
 };
 
 
