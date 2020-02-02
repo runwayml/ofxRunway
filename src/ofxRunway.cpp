@@ -186,7 +186,6 @@ const string& ofxRunway::getHost() const{
 //----------------------
 ofRectangle ofxRunway::drawStatus(int x , int y, bool bVerbose ) const{
 	
-	
 	ofColor backgroundColor = ofColor::black;
 	if(getState() == OFX_RUNWAY_CONNECTION_REFUSED){
 		backgroundColor = ofColor(255, 0, 0, ofMap(sin(ofGetElapsedTimef()*3), -1, 1, 100, 255));
@@ -195,43 +194,43 @@ ofRectangle ofxRunway::drawStatus(int x , int y, bool bVerbose ) const{
 	ofDrawBitmapStringHighlight(s, x, y, backgroundColor);
 	
 	return bf.getBoundingBox(s, x, y);
-	return ofRectangle(x,y, 0,0);
+//	return ofRectangle(x,y, 0,0);
 	
 }
 //----------------------
 string ofxRunway::getStateAsString(bool bVerbose) const{
 	stringstream ss;
 	
-	ofxRunwayTypeStatus ioSet = ioTypesSet;
-	if (ioSet == OFX_RUNWAY_TYPE_NOT_SET){
-		ss <<"OFX_RUNWAY_TYPE_NOT_SET" <<endl;
-	}else if (ioSet == OFX_RUNWAY_TYPE_WAITING){
-		ss <<"OFX_RUNWAY_TYPE_WAITING" << endl;
-	}else if (ioSet == OFX_RUNWAY_TYPE_SET){
-		ss <<"OFX_RUNWAY_TYPE_SET" << endl;
-	}
+//	ofxRunwayTypeStatus ioSet = ioTypesSet;
+//	if (ioSet == OFX_RUNWAY_TYPE_NOT_SET){
+//		ss <<"OFX_RUNWAY_TYPE_NOT_SET" <<endl;
+//	}else if (ioSet == OFX_RUNWAY_TYPE_WAITING){
+//		ss <<"OFX_RUNWAY_TYPE_WAITING" << endl;
+//	}else if (ioSet == OFX_RUNWAY_TYPE_SET){
+//		ss <<"OFX_RUNWAY_TYPE_SET" << endl;
+//	}
 	auto st = getState();
-	if(st == OFX_RUNWAY_DISCONNECTED){
-		ss << "ofxRunway : host "<< host << " DISCONNECTED";
-		if(bVerbose) ss << endl <<  "Initial default state";
+	ss << "ofxRunway : host "<< host << endl << stateToString(st);
+	if(bVerbose){
+		if(st == OFX_RUNWAY_DISCONNECTED){
+			ss << endl <<  "Initial default state";
+		}
+		else if(st == OFX_RUNWAY_SETUP){
+			ss << endl <<  "It has been setup but no attempt of getting any data from the runway server has been done";
+		}
+		else if(st == OFX_RUNWAY_CONNECTED){
+			ss << endl <<  "Setup and connected to runway server but no data has been received back";
+		}
+		else if(st == OFX_RUNWAY_RUNNING){
+			ss << endl <<  "Connected and getting data from server";
+		}
 	}
-	else if(st == OFX_RUNWAY_SETUP){
-		ss << "ofxRunway : host "<< host << " SETUP";
-		if(bVerbose) ss << endl <<  "It has been setup but no attempt of getting any data from the runway server has been done";
-	}
-	else if(st == OFX_RUNWAY_CONNECTED){
-		ss << "ofxRunway : host "<< host << " CONNECTED";
-		if(bVerbose) ss << endl <<  "Setup and connected to runway server but no data has been received back";
-	}
-	else if(st == OFX_RUNWAY_RUNNING){
-		ss << "ofxRunway : host "<< host << " RUNNING";
-		if(bVerbose) ss << endl <<  "Connected and getting data from server";
-	}
-	else if(st == OFX_RUNWAY_CONNECTION_REFUSED){
-		ss << "ofxRunway : host "<< host << " CONNECTION REFUSED" << endl;
+	if(st == OFX_RUNWAY_CONNECTION_REFUSED){
+		ss << endl;
 		ss << "    There was an error while trying to connect to runway server "  << endl;
 		ss << "    Probably runway is not running or the workspace in runway is not running." << endl;
 		ss << "    Aswell make sure that you have the DENSE CAP model in your workspace.";
+	
 	}
 	return ss.str();
 }
@@ -349,4 +348,15 @@ void ofxRunway::setInfoJson(const ofJson& info){
 //----------------------
 void ofxRunway::setDataSuffixURL(const string& sufix){
 	dataSuffix = sufix;
+}
+//----------------------
+string ofxRunway::stateToString(ofxRunwayState state){
+	switch (state) {
+		case OFX_RUNWAY_DISCONNECTED : return "DISCONNECTED";
+		case OFX_RUNWAY_SETUP : return "SETUP";
+		case OFX_RUNWAY_CONNECTED : return "CONNECTED";
+		case OFX_RUNWAY_RUNNING : return "RUNNING";
+		case OFX_RUNWAY_CONNECTION_REFUSED : return "CONNECTION REFUSED";
+	}
+	return "";
 }

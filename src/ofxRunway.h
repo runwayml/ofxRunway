@@ -97,6 +97,10 @@ public:
 	void setInfoJson(const ofJson& info);
 	
 	void setDataSuffixURL(const string& sufix);
+	
+	static string stateToString(ofxRunwayState state);
+	
+	
 protected:
 
 	string dataSuffix = "query";
