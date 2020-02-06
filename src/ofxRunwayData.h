@@ -30,7 +30,9 @@ public:
 	ofRectangle rect;
 	string label;
 	// it is more practical to declare a draw function here rather than accessing the struct elements directly in the loop draw.
-	void draw();
+	void draw() const ;
+	void draw(float x, float y, bool bSetStyle = true) const ;
+	
 };
 
 //-----------------------------------------------------------------------------------------------------------

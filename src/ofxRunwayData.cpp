@@ -385,14 +385,22 @@ string ofxRunwayData::findSegmentationLabel(const SegmentationMap & segMap, cons
 	return "";
 }
 //------------------------------------------------------------------------------------------------
-void ofxRunwayCaption::draw(){
-	ofPushStyle();
-	ofNoFill();
-	ofSetLineWidth(2);
-	ofSetColor(0);
-	ofDrawRectangle(rect);
-	ofDrawBitmapStringHighlight(label, rect.getTopLeft() + glm::vec3(3,20,0));
-	ofPopStyle();
+void ofxRunwayCaption::draw()const {
+	draw(0,0);
+}
+//------------------------------------------------------------------------------------------------
+void ofxRunwayCaption::draw(float x, float y, bool bSetStyle) const {
+	if(bSetStyle){
+		ofPushStyle();
+		ofNoFill();
+		ofSetLineWidth(2);
+		ofSetColor(0);
+	}
+	ofDrawRectangle(rect.x + x, rect.y + y, rect.width, rect.height);
+	ofDrawBitmapStringHighlight(label, rect.getTopLeft() + glm::vec3(3+ x,20 + y,0));
+	if(bSetStyle){
+		ofPopStyle();
+	}
 }
 //------------------------------------------------------------------------------------------------
 bool ofxRunwayPoseFeatures::setup(const ofJson& info){
