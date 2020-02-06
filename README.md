@@ -30,6 +30,20 @@ Open an example and compile. When running it you must have your RunwayML app run
 
 For models that accept images as input, there are usually two examples: one which uses your computer's webcam and continously streams frames to RunwayML, and the other one opens an image file and processes it once.
 
+## Warning 
+### Visual Studio 
+Some users have [reported](https://github.com/runwayml/ofxRunway/issues/11) a compilation error on Windows, particularly but probably not limited to Visual Studio 2019, producing the following error:
+
+```
+1>------ Build started: Project: example-GPT-2, Configuration: Debug x64 ------
+1>ofxNetworkUtils.cpp
+1>C:\of\addons\ofxNetworkUtils\src\ofxNetworkUtils.cpp(16,1): fatal error C1021: invalid preprocessor command 'warning'
+1>Done building project "example-GPT-2.vcxproj" -- FAILED.
+========== Build: 0 succeeded, 1 failed, 1 up-to-date, 0 skipped ==========
+```
+ The fix is to simply comment out the lines that start with `#warning` in file `openframeworks_folder\addons\ofxNetworkUtils\src\ofxNetworkUtils.cpp`
+
+
 
 ## Explanation
 
