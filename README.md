@@ -263,3 +263,5 @@ This is still a work in progress. Contributions are welcomed!
 * v2. Updated, with many examples by [Roy Macdonald](https://github.com/roymacdonald/) 🎉
 
 Note: v1 and v2 are not compatible even though they share a lot of code.
+
+Note: This project is heavily inspired by the [RuwnayML Processing Library](https://github.com/runwayml/processing-library) made by [George Profenza](https://github.com/orgicus)
