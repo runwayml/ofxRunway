@@ -264,4 +264,4 @@ This is still a work in progress. Contributions are welcomed!
 
 Note: v1 and v2 are not compatible even though they share a lot of code.
 
-Note: This project is heavily inspired by the [RuwnayML Processing Library](https://github.com/runwayml/processing-library) made by [George Profenza](https://github.com/orgicus)
+Note: This project is heavily inspired by the [RunwayML Processing Library](https://github.com/runwayml/processing-library) made by [George Profenza](https://github.com/orgicus)
