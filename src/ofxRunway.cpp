@@ -97,8 +97,8 @@ void ofxRunway::makeRequest(const string& address,  std::function<void (const of
 		request = make_unique<ofxHTTP::FormRequest>(Poco::Net::HTTPRequest::HTTP_DELETE, address, Poco::Net::HTTPMessage::HTTP_1_1);
 	}
 	request->setContentType("application/json");
-	request->add("Accept","application/json");
-	request->set("Accept-Encoding","");
+	request->add("Accept","*/*");
+	request->set("Accept-Encoding","gzip, deflate, br");
 	try
 	{
 		

@@ -53,7 +53,7 @@ void ofxRunwayData::setImage(const string& name,
 	
 	// Encode the compressed pixels in base64.
 	ofxIO::ByteBuffer base64CompressedPixelsIn;
-	ofxIO::Base64Encoding base64Encoder;
+	ofxIO::Base64Encoding base64Encoder (false, false, true);
 	base64Encoder.encode(ofxIO::ByteBuffer(compressedPixels.getData(), compressedPixels.size()), base64CompressedPixelsIn);
 	
 	string header;
@@ -65,7 +65,7 @@ void ofxRunwayData::setImage(const string& name,
 		ofLogError("ofxRunwayData::setImage") << "invalid image type. Must be OFX_RUNWAY_JPG or OFX_RUNWAY_PNG";
 	}
 	
-	data[name] = header + base64CompressedPixelsIn.toString()+"==";
+	data[name] = header + base64CompressedPixelsIn.toString();//+"==";
 }
 //------------------------------------------------------------------------------------------------
 void ofxRunwayData::setBoolean(const string& name, bool b){
