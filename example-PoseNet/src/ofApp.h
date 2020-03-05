@@ -30,6 +30,9 @@
 #include "ofMain.h"
 #include "ofxRunway.h"
 
+//comment the line below to use a video file
+#define USE_VIDEO_GRABBER
+
 #include "ofxGui.h"
 // make sure you make your ofApp or class to inherit from ofxRunwayListener
 class ofApp : public ofBaseApp, public ofxRunwayListener{
@@ -46,13 +49,16 @@ public:
 	
 	ofxRunway runway;
 	
-//	ofVideoGrabber video;
+#ifdef USE_VIDEO_GRABBER
+	ofVideoGrabber video;
+#else
 	ofVideoPlayer video;
+#endif
 	
 	// Callback functions that process what Runway sends back
 	void runwayInfoEvent(ofJson& info);
 	void runwayErrorEvent(string& message);
-	
+
 	
 	// PoseNet returns poses, which are a collection of structured points representing the joints of each person detected
 	vector<ofxRunwayPose> poses;
@@ -68,7 +74,7 @@ public:
 	ofParameter<int> maxDetections = {"Max Detections", 10, 1, 50};
 	ofParameter<float> scoreThreshold = {"Score Threshold", 0.4, 0, 1};
 	ofParameter<int> estimationType = {"Estimation type", 0, 0, 1};
-	
+
 	ofxPanel gui;
 
 	bool bDrawGui = true;
