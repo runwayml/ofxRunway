@@ -19,7 +19,8 @@ enum ofxRunwayPoseType{
 enum ofxRunwayCaptionType{
 	OFX_RUNWAY_COCO,
 	OFX_RUNWAY_DENSE_CAP,
-	OFX_RUNWAY_FACE_DETECTION
+	OFX_RUNWAY_FACE_DETECTION,
+	OFX_RUNWAY_KERAS_OCR
 };
 //-----------------------------------------------------------------------------------------------------------
 // simple structure to hold the captions we get back from runway.

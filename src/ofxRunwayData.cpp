@@ -244,7 +244,13 @@ bool ofxRunwayData::getCaptions(vector<ofxRunwayCaption>& captions, float imgWid
 			return true;
 		}
 	}
-	if(capType == OFX_RUNWAY_DENSE_CAP || capType == OFX_RUNWAY_COCO){
+	else if(capType == OFX_RUNWAY_KERAS_OCR){
+		if(data.count("bboxes")){
+			boxes = data["bboxes"];//used with DenseCap
+			labels = data["labels"];
+		}
+	}
+	if(capType == OFX_RUNWAY_DENSE_CAP || capType == OFX_RUNWAY_COCO || capType == OFX_RUNWAY_KERAS_OCR){
 		// as long the array sizes match
 		if(boxes.size() == labels.size() && boxes.size() > 0){
 			// for each array element
