@@ -122,6 +122,17 @@ bool tryReceive(ofxRunwayData & data);
 ```
 
 This function will check if there is any new data, and if there is, it will move or copy this new data to the `ofxRunwayData` instance you pass to it and will return true. If there is no new data it will return false. It is intended to be called from within your `ofApp::update` function. There is no need to make any other checks or conditions; if there is nothing it will return immediately with very little overhead.
+Use it when you want to access directly the data received from the RunwayML app, otherwise use the handy get functions further down.
+
+```cpp
+	ofxRunwayData dataToReceive;
+	while (runway.tryReceive(dataToReceive)) {
+//		 dataToReceive.data contains the raw JSON data sent by RunwayML. And it is here where you should perform what ever you need with it.
+		break;
+	}
+```
+
+######  get
 
 Just like the send methods there are a few handy functions that you can use when expecting a single element to be returned:
 ```cpp
@@ -129,6 +140,8 @@ bool get(const string& name, ofImage& img);
 bool get(const string& name, ofPixels& pix);
 bool get(const string& name, string& data);
 bool get(vector<ofxRunwayCaption>& captions, float imgWidth, float imgHeight);
+bool get(vector<ofxRunwayPose>& poses, float imgWidth, float imgHeight, ofxRunwayPoseType poseType);
+bool get(vector<ofxRunwayFaceLandmarks>& landmarks, float imgWidth, float imgHeight);
 ```
 
 ###### Other methods

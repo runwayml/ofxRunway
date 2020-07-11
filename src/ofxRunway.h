@@ -21,6 +21,10 @@ enum ofxRunwayState{
 };
 
 
+
+///\brief ofxRunwayListener class
+///\ this is a virtual abstract class (interfase, protocol, etc) which you extend and implement in some other class in which you want to receive info and error events.
+///\ It is not mandatory to implement in order to use ofxRunway
 class ofxRunwayListener{
 
 public:
@@ -28,6 +32,10 @@ public:
 	virtual void runwayErrorEvent(string& message) = 0;
 };
 
+
+
+///\brief ofxRunway class
+/// this is the main class in this addon. It runs in its own thread and wil be in charge of sending and receiving data from RunwayML's app.
 class ofxRunway:public  ofxIO::Thread {
 public:
 	
