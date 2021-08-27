@@ -30,14 +30,16 @@ void ofApp::setup()
 //--------------------------------------------------------------
 void ofApp::update()
 {
+    // structuring it this way allows you use tryReceive
+    ofxRunwayData dataToReceive;
 
     // infer/generate a new image if we have sent a request to Runway
-    if (bWaitingForResponse)
+    // using tryReceive we can make sure there is data available before grabbing it
+    while (runway.tryReceive(dataToReceive))
     {
-        runway.get("image", currentImg);    // stores generated image to currentImg
-        bWaitingForResponse = false;
+       dataToReceive.getImage("image", currentImg);
+       currentImg.update();
     }
-
 }
 //--------------------------------------------------------------
 void ofApp::draw()
@@ -100,8 +102,6 @@ void ofApp::generate_image(vector<float> z, float truncation)
     // basically, the higher the truncation value the weirder the results
 
     runway.send(data);
-
-    bWaitingForResponse = true;
 }
 
 // Runway sends information about the current model
